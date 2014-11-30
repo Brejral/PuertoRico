@@ -1,8 +1,10 @@
 package com.brejral.puertorico.game.crop;
 
 public class Coffee extends Crop {
+	public static final String NAME = "Coffee";
+	
 	public Coffee() {
-		super();
-		this.sellingPrice = 4;
+		super(NAME);
+		setSellingPrice(4);
 	}
 }

@@ -1,5 +1,5 @@
 package com.brejral.puertorico.game.role;
 
-public class Prospector {
+public class Prospector extends Role {
 
 }

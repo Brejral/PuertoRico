@@ -1,11 +1,20 @@
 package com.brejral.puertorico.game.crop;
 
 public class Crop {
-	protected int sellingPrice;
-	protected boolean isSettled;
+	private int sellingPrice;
+	private boolean isSettled;
+	private String name;
 	
-	public Crop() {
-		
+	public Crop(String name) {
+		this.name = name;
+	}
+	
+	protected void setSellingPrice(int price) {
+		this.sellingPrice = price;
+	}
+	
+	public int getSellingPrice() {
+		return sellingPrice;
 	}
 	
 	public boolean isSettled() {

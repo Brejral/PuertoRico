@@ -11,6 +11,14 @@ import com.brejral.puertorico.game.crop.Indigo;
 import com.brejral.puertorico.game.crop.Quarry;
 import com.brejral.puertorico.game.crop.Sugar;
 import com.brejral.puertorico.game.crop.Tobacco;
+import com.brejral.puertorico.game.role.Builder;
+import com.brejral.puertorico.game.role.Captain;
+import com.brejral.puertorico.game.role.Craftsman;
+import com.brejral.puertorico.game.role.Mayor;
+import com.brejral.puertorico.game.role.Prospector;
+import com.brejral.puertorico.game.role.Role;
+import com.brejral.puertorico.game.role.Settler;
+import com.brejral.puertorico.game.role.Trader;
 import com.brejral.puertorico.game.ship.Ship;
 
 public class Bank {
@@ -18,10 +26,14 @@ public class Bank {
 	private List<Crop> cropSupply, settlerCropSupply;
 	private List<Quarry> quarrySupply;
 	private Ship settlerShip;
+	private List<Ship> cargoShips;
+	private List<Role> roles;
 	
 	public Bank() {
 		initializeCropSupply();
 		initializeQuarrySupply();
+		initializeRoles();
+		initializeCargoShips();
 		settlerShip = new Ship();
 		settlerCropSupply = new ArrayList<Crop>(GameHelper.getNumberOfPlayers() + 1);
 		switch(GameHelper.getNumberOfPlayers()) {
@@ -70,6 +82,29 @@ public class Bank {
 		for (int i = 0; i < 12; i++) {
 			cropSupply.add(new Indigo());
 		}
+	}
+	
+	private void initializeRoles() {
+		roles = new ArrayList<Role>();
+		roles.add(new Builder());
+		roles.add(new Settler());
+		roles.add(new Craftsman());
+		roles.add(new Mayor());
+		roles.add(new Captain());
+		roles.add(new Trader());
+		if (GameHelper.getNumberOfPlayers() == 5) {
+			roles.add(new Prospector());
+			roles.add(new Prospector());
+		} else if (GameHelper.getNumberOfPlayers() == 4) {
+			roles.add(new Prospector());
+		}
+	}
+	
+	private void initializeCargoShips() {
+		cargoShips = new ArrayList<Ship>();
+		cargoShips.add(new Ship(GameHelper.getNumberOfPlayers() + 1));
+		cargoShips.add(new Ship(GameHelper.getNumberOfPlayers() + 2));
+		cargoShips.add(new Ship(GameHelper.getNumberOfPlayers() + 3));
 	}
 
 	public int getSettlerSupply() {
@@ -151,5 +186,35 @@ public class Bank {
 				cropSupply.remove(0);
 			}
 		}
+	}
+
+	public void resupplySettlerShip(int openSlots) {
+		int resupply = 0;
+		if (openSlots > settlerSupply) {
+			GameHelper.setLastRound();
+			resupply = settlerSupply;
+		} else if (openSlots < GameHelper.getNumberOfPlayers()) {
+			resupply = GameHelper.getNumberOfPlayers();
+		} else {
+			resupply = openSlots;
+		}
+		settlerShip.setSettlers(resupply);
+		settlerSupply -= resupply;
+	}
+
+	public List<Ship> getCargoShips() {
+		return cargoShips;
+	}
+
+	public void setCargoShips(List<Ship> cargoShips) {
+		this.cargoShips = cargoShips;
+	}
+
+	public List<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
 	}
 }

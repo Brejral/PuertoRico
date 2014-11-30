@@ -14,7 +14,7 @@ public class Game {
 	private int numberOfPlayers;
 	private Bank bank;
 	private List<Player> players;
-	private List<Ship> cargoShips;
+	private boolean isLastRound;
 	
 	public Game(List<Player> players) {
 		numberOfPlayers = players.size();
@@ -36,9 +36,9 @@ public class Game {
 					player.setGovenor(true);
 				}
 				if (i < 2) {
-					player.addCrop(Indigo.class.getName());
+					player.addCrop(Indigo.NAME);
 				} else {
-					player.addCrop(Corn.class.getName());
+					player.addCrop(Corn.NAME);
 				}
 				player.addCoins(2);
 			}
@@ -50,9 +50,9 @@ public class Game {
 					player.setGovenor(true);
 				}
 				if (i < 2) {
-					player.addCrop(Indigo.class.getName());
+					player.addCrop(Indigo.NAME);
 				} else {
-					player.addCrop(Corn.class.getName());
+					player.addCrop(Corn.NAME);
 				}
 				player.addCoins(3);
 			}
@@ -64,9 +64,9 @@ public class Game {
 					player.setGovenor(true);
 				}
 				if (i < 3) {
-					player.addCrop(Indigo.class.getName());
+					player.addCrop(Indigo.NAME);
 				} else {
-					player.addCrop(Corn.class.getName());
+					player.addCrop(Corn.NAME);
 				}
 				player.addCoins(4);
 			}
@@ -84,5 +84,13 @@ public class Game {
 	
 	public int getNumberOfPlayers() {
 		return numberOfPlayers;
+	}
+
+	public void setLastRound() {
+		isLastRound = true;
+	}
+	
+	public boolean isLastRound() {
+		return isLastRound;
 	}
 }

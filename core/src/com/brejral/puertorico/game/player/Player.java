@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.brejral.puertorico.game.GameHelper;
+import com.brejral.puertorico.game.building.Building;
 import com.brejral.puertorico.game.crop.Crop;
 import com.brejral.puertorico.game.crop.Quarry;
 import com.brejral.puertorico.game.role.Role;
@@ -13,8 +14,9 @@ public class Player {
 	private User user;
 	private Role role;
 	private int points = 0, coins = 0;
-	private boolean isGovenor = false;
+	private boolean isGovenor = false, isTurn = false;
 	private List<Crop> cropList = new ArrayList<Crop>(12);
+	private List<Building> buildings = new ArrayList<Building>(); //ArrayList of buildings counted top to bottom then left to right
 	
 	public Player() {
 		
@@ -73,5 +75,25 @@ public class Player {
 	
 	public void clearRole() {
 		setRole(null);
+	}
+
+	public List<Building> getBuildings() {
+		return buildings;
+	}
+	
+	public int getOpenBuildingSlots() {
+		int openSlots = 0;
+		for (Building building : getBuildings()) {
+			openSlots += building.getOpenSlots();
+		}
+		return openSlots;
+	}
+
+	public boolean isTurn() {
+		return isTurn;
+	}
+
+	public void setTurn(boolean isTurn) {
+		this.isTurn = isTurn;
 	}
 }
