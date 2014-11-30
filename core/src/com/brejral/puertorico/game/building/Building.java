@@ -1,5 +1,7 @@
 package com.brejral.puertorico.game.building;
 
+import com.brejral.puertorico.game.player.Player;
+
 public class Building {
 	private String name;
 	private int size = 1, settlerSlots = 1, settlers, cost, points;
@@ -83,5 +85,17 @@ public class Building {
 	
 	public int getOpenSlots() {
 		return settlerSlots - settlers;
+	}
+	
+	public boolean isGameEndUtility() {
+		return size == 2;
+	}
+	
+	public int getGameEndPoints(Player player) {
+		return 0;
+	}
+	
+	public boolean isSmallProduction() {
+		return isProduction && size == 1;
 	}
 }

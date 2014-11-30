@@ -1,6 +1,7 @@
 package com.brejral.puertorico.game.player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.brejral.puertorico.game.GameHelper;
@@ -13,10 +14,11 @@ import com.brejral.puertorico.user.User;
 public class Player {
 	private User user;
 	private Role role;
-	private int points = 0, coins = 0;
+	private int points = 0, coins = 0, settlers = 0;
 	private boolean isGovenor = false, isTurn = false;
-	private List<Crop> cropList = new ArrayList<Crop>(12);
+	private List<Crop> crops = new ArrayList<Crop>(12);
 	private List<Building> buildings = new ArrayList<Building>(); //ArrayList of buildings counted top to bottom then left to right
+	private HashMap<String, Integer> cropSupply = new HashMap<String, Integer>();
 	
 	public Player() {
 		
@@ -24,6 +26,10 @@ public class Player {
 	
 	public Player(User usr) {
 		user = usr;
+	}
+	
+	public User getUser() {
+		return user;
 	}
 	
 	public void resetPlayer() {
@@ -59,22 +65,79 @@ public class Player {
 		this.isGovenor = isGovenor;
 	}
 	
+	public List<Crop> getCrops() {
+		return crops;
+	}
+	
+	public List<Crop> getCrops(String cropName) {
+		List<Crop> foundCrops = new ArrayList<Crop>();
+		for (Crop crop : crops) {
+			if (crop.getName().equals(cropName)) {
+				foundCrops.add(crop);
+			}
+		}
+		return foundCrops;
+	}
+	
+	public int getNumberOfSettledCrops(String cropName) {
+		int settledCrops = 0;
+		for (Crop crop : getCrops(cropName)) {
+			if (crop.isSettled()) {
+				settledCrops++;
+			}
+		}
+		return settledCrops;
+	}
+	
 	public void addCrop(String className) {
 		Crop crop = GameHelper.getCropFromBank(className);
-		cropList.add(crop);
+		crops.add(crop);
 	}
 	
 	public void addQuarry() {
 		Quarry quarry = GameHelper.getQuarryFromBank();
-		cropList.add(quarry);
+		crops.add(quarry);
 	}
 	
 	public void setRole(Role role) {
 		this.role = role;
 	}
 	
+	public Role getRole() {
+		return role;
+	}
+	
 	public void clearRole() {
 		setRole(null);
+	}
+	
+	public boolean hasActiveBuilding(String buildingName) {
+		for (Building building : getBuildings(buildingName)) {
+			if (building.isActive()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public int getNumberActiveBuildings(String buildingName) {
+		int activeBuildings = 0;
+		for (Building building : getBuildings(buildingName)) {
+			if (building.isActive()) {
+				activeBuildings++;
+			}
+		}
+		return activeBuildings;
+	}
+	
+	public List<Building> getBuildings(String buildingName) {
+		List<Building> foundBuildings = new ArrayList<Building>();
+		for (Building building : buildings) {
+			if (building.getName().equals(buildingName)) {
+				foundBuildings.add(building);
+			}
+		}
+		return foundBuildings;
 	}
 
 	public List<Building> getBuildings() {
@@ -95,5 +158,40 @@ public class Player {
 
 	public void setTurn(boolean isTurn) {
 		this.isTurn = isTurn;
+	}
+	
+	public void produceCrops() {
+		
+	}
+
+	public HashMap<String, Integer> getCropSupply() {
+		return cropSupply;
+	}
+	
+	public void setCropSupply(String cropName, int value) {
+		cropSupply.put(cropName, value);
+	}
+	
+	public void addCropSupply(String cropName, int value) {
+		setCropSupply(cropName, cropSupply.get(cropName) + value);
+	}
+	
+	public int getTotalPoints() {
+		int totalPoints = points;
+		for (Building building : buildings) {
+			totalPoints += building.getPoints();
+			if (building.isGameEndUtility() && building.isActive()) {
+				totalPoints += building.getGameEndPoints(this);
+			}
+		}
+		return totalPoints;
+	}
+
+	public int getSettlers() {
+		return settlers;
+	}
+
+	public void addSettlers(int value) {
+		this.settlers += value;
 	}
 }

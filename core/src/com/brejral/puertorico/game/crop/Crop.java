@@ -9,6 +9,10 @@ public class Crop {
 		this.name = name;
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
 	protected void setSellingPrice(int price) {
 		this.sellingPrice = price;
 	}

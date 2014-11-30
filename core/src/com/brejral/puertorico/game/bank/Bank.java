@@ -1,6 +1,7 @@
 package com.brejral.puertorico.game.bank;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.brejral.puertorico.game.GameHelper;
@@ -28,9 +29,11 @@ public class Bank {
 	private Ship settlerShip;
 	private List<Ship> cargoShips;
 	private List<Role> roles;
+	private HashMap<String, Integer> goodSupply;
 	
 	public Bank() {
 		initializeCropSupply();
+		initializeGoodSupply();
 		initializeQuarrySupply();
 		initializeRoles();
 		initializeCargoShips();
@@ -82,6 +85,15 @@ public class Bank {
 		for (int i = 0; i < 12; i++) {
 			cropSupply.add(new Indigo());
 		}
+	}
+	
+	private void initializeGoodSupply() {
+		goodSupply = new HashMap<String, Integer>();
+		goodSupply.put("Corn", 10);
+		goodSupply.put("Coffee", 9);
+		goodSupply.put("Indigo", 11);
+		goodSupply.put("Sugar", 11);
+		goodSupply.put("Tobacco", 9);
 	}
 	
 	private void initializeRoles() {
