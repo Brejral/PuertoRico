@@ -134,11 +134,13 @@ public class Game {
 	}
 	
 	public boolean isEndOfRound() {
-		
+		Player turnPlayer = getCurrentPlayerForTurn();
+		return GameHelper.getNextPlayer(turnPlayer).equals(getCurrentPlayerForRound());
 	}
 	
 	public boolean isEndOfTurn() {
-		
+		Player actionPlayer = getCurrentPlayerForAction();
+		return GameHelper.getNextPlayer(actionPlayer).equals(getCurrentPlayerForTurn());
 	}
 	
 	public Player getCurrentPlayerForTurn() {
