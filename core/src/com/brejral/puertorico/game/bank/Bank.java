@@ -131,8 +131,16 @@ public class Bank {
 		return coinSupply;
 	}
 
-	public void setCoinSupply(int coinSupply) {
+	private void setCoinSupply(int coinSupply) {
 		this.coinSupply = coinSupply;
+	}
+	
+	public void removeCoinSupply(int value) {
+		this.coinSupply -= value;
+	}
+	
+	public void addCoinSupply(int value) {
+		this.coinSupply += value;
 	}
 
 	public int getPointSupply() {
@@ -182,10 +190,10 @@ public class Bank {
 		return cargoShips;
 	}
 
-	public void setCargoShips(List<Ship> cargoShips) {
-		this.cargoShips = cargoShips;
+	public Ship getSettlerShip() {
+		return settlerShip;
 	}
-
+	
 	public List<Role> getRoles() {
 		return roles;
 	}

@@ -9,12 +9,16 @@ public class Role {
 		bonusCoins++;
 	}
 	
-	protected void onRoleSelected(Player player) {
+	protected void onRoleStart(Player player) {
 		player.addCoins(bonusCoins);
 		bonusCoins = 0;
 	}
 	
-	protected void onRoleTurnEnd() {
+	protected void onAction(Player player) {
+		
+	}
+	
+	protected void onRoleEnd() {
 		
 	}
 

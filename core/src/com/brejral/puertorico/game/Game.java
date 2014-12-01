@@ -8,7 +8,7 @@ import com.brejral.puertorico.game.bank.Bank;
 import com.brejral.puertorico.game.crop.Corn;
 import com.brejral.puertorico.game.crop.Indigo;
 import com.brejral.puertorico.game.player.Player;
-import com.brejral.puertorico.game.ship.Ship;
+import com.brejral.puertorico.game.role.Role;
 
 public class Game {
 	private int numberOfPlayers;
@@ -92,5 +92,74 @@ public class Game {
 	
 	public boolean isLastRound() {
 		return isLastRound;
+	}
+	
+	public void nextRound() {
+		Player govenor = getCurrentPlayerForRound();
+		
+	}
+	
+	public void nextTurn() {
+		Player turnPlayer = getCurrentPlayerForTurn();
+		boolean isEndOfRound = isEndOfRound();
+		if (!isEndOfRound) {
+			GameHelper.getNextPlayer(turnPlayer).setTurn(true);
+			//TODO Have user select their role
+		}
+		turnPlayer.setTurn(false);
+		if (isEndOfRound) {
+			nextRound();
+		}
+	}
+	
+	public void nextAction() {
+		Player actionPlayer = getCurrentPlayerForAction();
+		boolean isEndOfTurn = isEndOfTurn();
+		if (!isEndOfTurn) {
+			GameHelper.getNextPlayer(actionPlayer).setAction(true);
+		}
+		actionPlayer.setAction(false);
+		if (isEndOfTurn) {
+			nextTurn();
+		}
+	}
+	
+	public Player getCurrentPlayerForRound() {
+		for (Player player : players) {
+			if (player.isGovenor()) {
+				return player;
+			}
+		}
+		return null;
+	}
+	
+	public boolean isEndOfRound() {
+		
+	}
+	
+	public boolean isEndOfTurn() {
+		
+	}
+	
+	public Player getCurrentPlayerForTurn() {
+		for (Player player : players) {
+			if (player.isTurn()) {
+				return player;
+			}
+		}
+		return null;
+	}
+	
+	public Player getCurrentPlayerForAction() {
+		for (Player player : players) {
+			if (player.isAction()) {
+				return player;
+			}
+		}
+		return null;
+	}
+	
+	public Role getCurrentRole() {
+		return getCurrentPlayerForTurn().getRole();
 	}
 }

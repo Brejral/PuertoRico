@@ -15,7 +15,7 @@ public class Player {
 	private User user;
 	private Role role;
 	private int points = 0, coins = 0, settlers = 0;
-	private boolean isGovenor = false, isTurn = false;
+	private boolean isGovenor = false, isTurn = false, isAction = false;
 	private List<Crop> crops = new ArrayList<Crop>(12);
 	private List<Building> buildings = new ArrayList<Building>(); //ArrayList of buildings counted top to bottom then left to right
 	private HashMap<String, Integer> cropSupply = new HashMap<String, Integer>();
@@ -63,6 +63,22 @@ public class Player {
 
 	public void setGovenor(boolean isGovenor) {
 		this.isGovenor = isGovenor;
+	}
+	
+	public boolean isTurn() {
+		return isTurn;
+	}
+
+	public void setTurn(boolean isTurn) {
+		this.isTurn = isTurn;
+	}
+	
+	public boolean isAction() {
+		return isAction;
+	}
+	
+	public void setAction(boolean isAction) {
+		this.isAction = isAction;
 	}
 	
 	public List<Crop> getCrops() {
@@ -152,14 +168,6 @@ public class Player {
 		return openSlots;
 	}
 
-	public boolean isTurn() {
-		return isTurn;
-	}
-
-	public void setTurn(boolean isTurn) {
-		this.isTurn = isTurn;
-	}
-	
 	public void produceCrops() {
 		
 	}
