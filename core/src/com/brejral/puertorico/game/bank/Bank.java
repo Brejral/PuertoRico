@@ -143,44 +143,8 @@ public class Bank {
 		this.pointSupply = pointSupply;
 	}
 
-	public int getCornSupply() {
-		return cornSupply;
-	}
-
-	public void setCornSupply(int cornSupply) {
-		this.cornSupply = cornSupply;
-	}
-
-	public int getCoffeeSupply() {
-		return coffeeSupply;
-	}
-
-	public void setCoffeeSupply(int coffeeSupply) {
-		this.coffeeSupply = coffeeSupply;
-	}
-
-	public int getIndigoSupply() {
-		return indigoSupply;
-	}
-
-	public void setIndigoSupply(int indigoSupply) {
-		this.indigoSupply = indigoSupply;
-	}
-
-	public int getSugarSupply() {
-		return sugarSupply;
-	}
-
-	public void setSugarSupply(int sugarSupply) {
-		this.sugarSupply = sugarSupply;
-	}
-
-	public int getTabaccoSupply() {
-		return tabaccoSupply;
-	}
-
-	public void setTabaccoSupply(int tabaccoSupply) {
-		this.tabaccoSupply = tabaccoSupply;
+	public HashMap<String, Integer> getGoodSupply() {
+		return goodSupply;
 	}
 	
 	public List<Crop> getCropSupply() {
