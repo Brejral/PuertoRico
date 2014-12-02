@@ -3,10 +3,10 @@ package com.brejral.puertorico.desktop;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,6 +21,7 @@ import com.brejral.puertorico.game.crop.Quarry;
 import com.brejral.puertorico.game.crop.Sugar;
 import com.brejral.puertorico.game.crop.Tobacco;
 import com.brejral.puertorico.game.player.Player;
+import com.brejral.puertorico.game.role.Role;
 
 // Tim import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 // Tim import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
@@ -38,6 +39,33 @@ public class DesktopLauncher {
     static JLabel supplyGoodsTobaccoLabel;
     static JLabel supplyGoodsQuarryLabel;
 
+    static JButton[] supplyCrops = new JButton[6];
+    static JButton[] roles = new JButton[8];
+    
+	private static JLabel createLabelGUI(JPanel pane, GridBagConstraints c, int gridx, int gridy, int gridw, String label) {
+		JLabel jlabel = new JLabel(label);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = gridx;
+		c.gridy = gridy;
+		c.gridwidth = gridw;
+		pane.add(jlabel, c);
+		return jlabel;
+	}
+
+	private static JButton createButtonGUI(JPanel pane, GridBagConstraints c, int gridx, int gridy, int gridw, String label) {
+		JButton button = new JButton(label);
+	    button.setVerticalTextPosition(AbstractButton.CENTER);
+	    button.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
+	    button.setActionCommand(label);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = gridx;
+		c.gridy = gridy;
+		c.gridwidth = gridw;
+		c.gridheight = 2;
+		pane.add(button, c);
+		return button;
+	}
+
 	private static JLabel createLabelPairGUI(JPanel pane, GridBagConstraints c, int gridx, int gridy, int gridw, String label) {
 		JPanel panel = new JPanel(new FlowLayout());
 		JLabel jlabel = new JLabel(label);
@@ -45,17 +73,9 @@ public class DesktopLauncher {
 		panel.add(jlabel);
 		panel.add(field);
 		c.fill = GridBagConstraints.HORIZONTAL;
-		// c.weightx = 1.0;   //request any extra vertical space
-		// c.gridx = (gridx*2);
 		c.gridx = gridx;
 		c.gridy = gridy;
 		c.gridwidth = gridw;
-		// pane.add(jlabel, c);
-		// c.fill = GridBagConstraints.HORIZONTAL;
-		// c.weightx = 1.0;   //request any extra vertical space
-		// c.gridx = (gridx*2)+1;
-		// c.gridy = gridy;
-		// pane.add(field, c);
 		pane.add(panel, c);
 		return field;
 	}
@@ -104,7 +124,9 @@ public class DesktopLauncher {
     }
 
 	private static void createSummaryGUI(JFrame frame) {
-		JButton button;
+		JLabel jlabel;
+
+		// JButton button;
 		int col = 0;
 		int row = 0;
 		
@@ -112,13 +134,7 @@ public class DesktopLauncher {
 		pane.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
-		JLabel jlabel = new JLabel("Supplies:");
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = col++;
-		c.gridy = row;
-		c.gridwidth = 1;
-		pane.add(jlabel, c);
-
+		jlabel = createLabelGUI(pane, c, col++, row, 1, "Supplies: ");
         supplyCoinsLabel = createLabelPairGUI(pane, c, col++, row, 1, "Coins");
         supplyPointsLabel = createLabelPairGUI(pane, c, col++, row, 1, "Points");
         supplySettlersLabel = createLabelPairGUI(pane, c, col++, row, 1, "Settlers");
@@ -126,19 +142,33 @@ public class DesktopLauncher {
         row++;
 
 		col = 0;
-		jlabel = new JLabel("Goods:");
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = col++;
-		c.gridy = row;
-		c.gridwidth = 1;
-		pane.add(jlabel, c);
-
+		jlabel = createLabelGUI(pane, c, col++, row, 1, "Goods: ");
         supplyGoodsCoffeeLabel  = createLabelPairGUI(pane, c, col++, row, 1, Coffee.NAME);
         supplyGoodsCornLabel    = createLabelPairGUI(pane, c, col++, row, 1, Corn.NAME);
         supplyGoodsIndigoLabel  = createLabelPairGUI(pane, c, col++, row, 1, Indigo.NAME);
         supplyGoodsSugarLabel   = createLabelPairGUI(pane, c, col++, row, 1, Sugar.NAME);
         supplyGoodsTobaccoLabel = createLabelPairGUI(pane, c, col++, row, 1, Tobacco.NAME);
         row++;
+
+		col = 0;
+		jlabel = createLabelGUI(pane, c, col++, row, 1, "Crops: ");
+
+		int numPlayers = GameHelper.getNumberOfPlayers();
+		for (int i=0; i<numPlayers+1; i++)
+		{
+			supplyCrops[i] = createButtonGUI(pane, c, i+1, row, 1, "Corn");
+		}
+        row+=2;
+
+		col = 0;
+		jlabel = createLabelGUI(pane, c, col++, row, 1, "Roles: ");
+		List<Role> rolesList = GameHelper.getBank().getRoles();
+		int numRoles = rolesList.size();
+		for (int i=0; i<numRoles; i++)
+		{
+			roles[i] = createButtonGUI(pane, c, i+1, row, 1, rolesList.get(i).getClass().toString().substring(39));
+		}
+        row+=2;
 
         updateAll();
 
