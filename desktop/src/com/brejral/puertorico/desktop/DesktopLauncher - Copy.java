@@ -52,74 +52,42 @@ public class DesktopLauncher implements ActionListener {
     static JLabel messageLine;
     
     /* ********************************************************************************************** */
-    /**
-     * Main Constructor
-     * 
-     * Create the GUI and show it.  
-     */
-    public DesktopLauncher() {
-        //Create and set up the window.
-        JFrame frame = new JFrame("Puerto Rico");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
- 
-        createMainPanel(frame);
- 
-        //Display the window.
-        frame.pack();
-        frame.setVisible(true);
-    }
-    
-    /* ********************************************************************************************** */
-    public void actionPerformed(ActionEvent e) {
-    	String cmd = e.getActionCommand();
-    	if (cmd.startsWith("chooseCrop")) {
-    		displayMessage("Crop " + cmd.substring(11) + " was choosen");
-    	} else if (cmd.startsWith("chooseRole")) {
-    		displayMessage("Role " + cmd.substring(11) + " was choosen");
-    	} else if (cmd.equals("disable")) {
-            // b2.setEnabled(false);
-        } else {
-            // b2.setEnabled(true);
-        }
-    } 
-    
-    /* ********************************************************************************************** */
-	private JLabel createLabel(JPanel panel, String label) {
+	private static JLabel createLabel(JPanel panel, String label) {
 		JLabel jlabel = new JLabel(label);
 		panel.add(jlabel);
 		return jlabel;
 	}
 
     /* ********************************************************************************************** */
-	private JButton createButton(JPanel panel, String label, String action) {
+	private static JButton createButton(JPanel panel, String label, String action) {
 		JButton button = new JButton(label);
 	    button.setVerticalTextPosition(AbstractButton.CENTER);
 	    button.setHorizontalTextPosition(AbstractButton.LEADING); //aka LEFT, for left-to-right locales
 	    button.setActionCommand(action);
-	    button.addActionListener(this);
+	    // button.addActionListener(this);
 		panel.add(button);
 		return button;
 	}
 
     /* ********************************************************************************************** */
-	private JButton createButton(JPanel panel, String label) {
+	private static JButton createButton(JPanel panel, String label) {
 		return createButton(panel, label, label);
 	}
 
     /* ********************************************************************************************** */
-	private void displayMessage(String message) {
+	private static void displayMessage(String message) {
 		messageLine.setText(message);
 	}
 	
     /* ********************************************************************************************** */
-    private void updateAll()
+    private static void updateAll()
     {
         updateSupplies();
         updateGoods();
 	}
 
     /* ********************************************************************************************** */
-    private void updateSupplies()
+    private static void updateSupplies()
     {
     	// Supply Fields
     	// Display the Number of Main Supplies Remaining
@@ -137,7 +105,7 @@ public class DesktopLauncher implements ActionListener {
 	}
 
     /* ********************************************************************************************** */
-    private void updateGoods()
+    private static void updateGoods()
     {
         // Display the number Goods Remaining
         int supplyGoodsCoffee = GameHelper.getBank().getGoodSupply().get(Coffee.NAME);
@@ -157,7 +125,7 @@ public class DesktopLauncher implements ActionListener {
     }
 
     /* ********************************************************************************************** */
-	private void createMainPanel(JFrame frame) {
+	private static void createMainPanel(JFrame frame) {
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
@@ -243,6 +211,38 @@ public class DesktopLauncher implements ActionListener {
 	}
 	
     /* ********************************************************************************************** */
+    /**
+     * Create the GUI and show it.  For thread safety,
+     * this method should be invoked from the
+     * event-dispatching thread.
+     */
+    private static void createAndShowGUI() {
+        //Create and set up the window.
+        JFrame frame = new JFrame("Puerto Rico");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+ 
+        createMainPanel(frame);
+ 
+        //Display the window.
+        frame.pack();
+        frame.setVisible(true);
+    }
+    
+    /* ********************************************************************************************** */
+    public void actionPerformed(ActionEvent e) {
+    	String cmd = e.getActionCommand();
+    	if (cmd.startsWith("chooseCrop")) {
+    		displayMessage("Crop " + cmd.substring(11) + " was choosen");
+    	} else if (cmd.startsWith("chooseRole")) {
+    		displayMessage("Role " + cmd.substring(11) + " was choosen");
+    	} else if (cmd.equals("disable")) {
+            // b2.setEnabled(false);
+        } else {
+            // b2.setEnabled(true);
+        }
+    } 
+    
+    /* ********************************************************************************************** */
     public static void main (String[] arg) {
 		// Tim LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		// Tim new LwjglApplication(new PuertoRico(), config);
@@ -253,6 +253,6 @@ public class DesktopLauncher implements ActionListener {
     	}
     	new Game(players);
     	
-    	new DesktopLauncher();
+        createAndShowGUI();
 	}
 }
