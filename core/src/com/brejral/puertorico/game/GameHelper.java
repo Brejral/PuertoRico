@@ -83,4 +83,16 @@ public class GameHelper {
 		}
 		return players.get(index);
 	}
+	
+	public static Player getCurrentPlayerForAction() {
+		return getGame().getCurrentPlayerForAction();
+	}
+
+	public static Player getCurrentPlayerForTurn() {
+		return getGame().getCurrentPlayerForTurn();
+	}
+	
+	public static Player getCurrentPlayerForRound() {
+		return getGame().getCurrentPlayerForRound();
+	}
 }

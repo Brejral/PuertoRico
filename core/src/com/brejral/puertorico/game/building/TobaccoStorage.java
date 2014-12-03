@@ -2,10 +2,10 @@ package com.brejral.puertorico.game.building;
 
 import com.brejral.puertorico.game.crop.Tobacco;
 
-public class TabaccoStorage extends Building {
+public class TobaccoStorage extends Building {
 	public static final String NAME = "Tobacco Storage";
 
-	public TabaccoStorage() {
+	public TobaccoStorage() {
 		super(NAME);
 		setIsProduction(true);
 		setCost(5);

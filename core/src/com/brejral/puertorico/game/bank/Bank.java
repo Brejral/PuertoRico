@@ -5,6 +5,29 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.brejral.puertorico.game.GameHelper;
+import com.brejral.puertorico.game.building.CityHall;
+import com.brejral.puertorico.game.building.CoffeeRoaster;
+import com.brejral.puertorico.game.building.ConstructionHut;
+import com.brejral.puertorico.game.building.CustomsHouse;
+import com.brejral.puertorico.game.building.Factory;
+import com.brejral.puertorico.game.building.Fortress;
+import com.brejral.puertorico.game.building.GuildHall;
+import com.brejral.puertorico.game.building.Hacienda;
+import com.brejral.puertorico.game.building.Harbor;
+import com.brejral.puertorico.game.building.Hospice;
+import com.brejral.puertorico.game.building.IndigoPlant;
+import com.brejral.puertorico.game.building.LargeMarket;
+import com.brejral.puertorico.game.building.LargeWarehouse;
+import com.brejral.puertorico.game.building.Office;
+import com.brejral.puertorico.game.building.Residence;
+import com.brejral.puertorico.game.building.SmallIndigoPlant;
+import com.brejral.puertorico.game.building.SmallMarket;
+import com.brejral.puertorico.game.building.SmallSugarMill;
+import com.brejral.puertorico.game.building.SmallWarehouse;
+import com.brejral.puertorico.game.building.SugarMill;
+import com.brejral.puertorico.game.building.TobaccoStorage;
+import com.brejral.puertorico.game.building.University;
+import com.brejral.puertorico.game.building.Wharf;
 import com.brejral.puertorico.game.crop.Coffee;
 import com.brejral.puertorico.game.crop.Corn;
 import com.brejral.puertorico.game.crop.Crop;
@@ -23,13 +46,14 @@ import com.brejral.puertorico.game.role.Trader;
 import com.brejral.puertorico.game.ship.Ship;
 
 public class Bank {
-	private int settlerSupply, coinSupply, pointSupply, cornSupply = 10, coffeeSupply = 9, indigoSupply = 11, sugarSupply = 11, tabaccoSupply = 9;
+	private int settlerSupply, coinSupply, pointSupply;
 	private List<Crop> cropSupply, settlerCropSupply;
 	private List<Quarry> quarrySupply;
 	private Ship settlerShip;
 	private List<Ship> cargoShips;
 	private List<Role> roles;
 	private HashMap<String, Integer> goodSupply;
+	private HashMap<String, Integer> buildingSupply;
 	
 	public Bank() {
 		initializeCropSupply();
@@ -37,6 +61,7 @@ public class Bank {
 		initializeQuarrySupply();
 		initializeRoles();
 		initializeCargoShips();
+		initializeBuildingSupply();
 		settlerShip = new Ship();
 		settlerCropSupply = new ArrayList<Crop>(GameHelper.getNumberOfPlayers() + 1);
 		switch(GameHelper.getNumberOfPlayers()) {
@@ -118,6 +143,33 @@ public class Bank {
 		cargoShips.add(new Ship(GameHelper.getNumberOfPlayers() + 2));
 		cargoShips.add(new Ship(GameHelper.getNumberOfPlayers() + 3));
 	}
+	
+	private void initializeBuildingSupply() {
+		buildingSupply = new HashMap<String, Integer>();
+		buildingSupply.put(SmallIndigoPlant.NAME, 4);
+		buildingSupply.put(SmallSugarMill.NAME, 4);
+		buildingSupply.put(IndigoPlant.NAME, 3);
+		buildingSupply.put(SugarMill.NAME, 3);
+		buildingSupply.put(TobaccoStorage.NAME, 3);
+		buildingSupply.put(CoffeeRoaster.NAME, 3);
+		buildingSupply.put(SmallMarket.NAME, 2);
+		buildingSupply.put(Hacienda.NAME, 2);
+		buildingSupply.put(ConstructionHut.NAME, 2);
+		buildingSupply.put(SmallWarehouse.NAME, 2);
+		buildingSupply.put(Hospice.NAME, 2);
+		buildingSupply.put(Office.NAME, 2);
+		buildingSupply.put(LargeMarket.NAME, 2);
+		buildingSupply.put(LargeWarehouse.NAME, 2);
+		buildingSupply.put(Factory.NAME, 2);
+		buildingSupply.put(University.NAME, 2);
+		buildingSupply.put(Harbor.NAME, 2);
+		buildingSupply.put(Wharf.NAME, 2);
+		buildingSupply.put(GuildHall.NAME, 1);
+		buildingSupply.put(Residence.NAME, 1);
+		buildingSupply.put(CustomsHouse.NAME, 1);
+		buildingSupply.put(CityHall.NAME, 1);
+		buildingSupply.put(Fortress.NAME, 1);
+	}
 
 	public int getSettlerSupply() {
 		return settlerSupply;
@@ -198,7 +250,13 @@ public class Bank {
 		return roles;
 	}
 
-	public void setRoles(List<Role> roles) {
-		this.roles = roles;
+	public void addRole(Role role) {
+		this.roles.add(role);
+	}
+
+	public void addBonusCoinsToRoles() {
+		for (Role role : roles) {
+			role.addBonusCoin();
+		}
 	}
 }

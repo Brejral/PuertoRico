@@ -94,33 +94,49 @@ public class Game {
 		return isLastRound;
 	}
 	
+	public void endGame() {
+		
+	}
+	
 	public void nextRound() {
 		Player govenor = getCurrentPlayerForRound();
-		
+		Player nextPlayer = GameHelper.getNextPlayer(govenor);
+		govenor.setAction(false);
+		if (isLastRound()) {
+			endGame();
+		} else {
+			getBank().addBonusCoinsToRoles();
+			for (Player player : players) {
+				getBank().addRole(player.getRole());
+				player.setRole(null);
+			}
+			nextPlayer.setGovenor(true);
+			nextPlayer.setTurn(true);
+			nextPlayer.setAction(true);
+		}
 	}
 	
 	public void nextTurn() {
 		Player turnPlayer = getCurrentPlayerForTurn();
-		boolean isEndOfRound = isEndOfRound();
-		if (!isEndOfRound) {
-			GameHelper.getNextPlayer(turnPlayer).setTurn(true);
-			//TODO Have user select their role
-		}
+		Player nextPlayer = GameHelper.getNextPlayer(turnPlayer);
 		turnPlayer.setTurn(false);
-		if (isEndOfRound) {
+		if (isEndOfRound()) {
 			nextRound();
+		} else {
+			nextPlayer.setTurn(true);
+			nextPlayer.setAction(true);
+			//TODO Have user select their role
 		}
 	}
 	
 	public void nextAction() {
 		Player actionPlayer = getCurrentPlayerForAction();
-		boolean isEndOfTurn = isEndOfTurn();
-		if (!isEndOfTurn) {
-			GameHelper.getNextPlayer(actionPlayer).setAction(true);
-		}
+		Player nextPlayer = GameHelper.getNextPlayer(actionPlayer);
 		actionPlayer.setAction(false);
-		if (isEndOfTurn) {
+		if (isEndOfTurn()) {
 			nextTurn();
+		} else {
+			nextPlayer.setAction(true);
 		}
 	}
 	

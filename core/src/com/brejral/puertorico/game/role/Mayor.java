@@ -7,6 +7,7 @@ import com.brejral.puertorico.game.GameHelper;
 import com.brejral.puertorico.game.player.Player;
 
 public class Mayor extends Role {
+	public static final String NAME = "Mayor";
 
 	public void onRoleStart(Player player) {
 		super.onRoleStart(player);

@@ -4,21 +4,30 @@ import com.brejral.puertorico.game.player.Player;
 
 public class Role {
 	protected int bonusCoins;
+	private String name;
 	
-	protected void addBonusCoin() {
+	public Role(String name) {
+		this.name = name;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void addBonusCoin() {
 		bonusCoins++;
 	}
 	
-	protected void onRoleStart(Player player) {
+	public void onRoleStart(Player player) {
 		player.addCoins(bonusCoins);
 		bonusCoins = 0;
 	}
 	
-	protected void onAction(Player player) {
+	public void onAction(Player player) {
 		
 	}
 	
-	protected void onRoleEnd() {
+	public void onRoleEnd() {
 		
 	}
 

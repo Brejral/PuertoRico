@@ -4,7 +4,11 @@ import com.brejral.puertorico.game.GameHelper;
 import com.brejral.puertorico.game.player.Player;
 
 public class Prospector extends Role {
-
+	public static final String NAME = "Prospector";
+	
+	public Prospector() {
+		super(NAME);
+	}
 	public void onRoleStart(Player player) {
 		super.onRoleStart(player);
 		player.addCoins(1);
