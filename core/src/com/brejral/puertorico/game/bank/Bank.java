@@ -215,22 +215,6 @@ public class Bank {
 		return goodSupply;
 	}
 	
-	public int getGoodSupply(String cropName) {
-		return goodSupply.get(cropName);
-	}
-	
-	private void setGoodSupply(String cropName, int value) {
-		goodSupply.put(cropName, value);
-	}
-	
-	public void addGoodSupply(String cropName, int value) {
-		setGoodSupply(cropName, getGoodSupply(cropName) + value);
-	}
-	
-	public void subtractGoodSupply(String cropName, int value) {
-		setGoodSupply(cropName, getGoodSupply(cropName) - value);
-	}
-	
 	public List<Crop> getCropSupply() {
 		return cropSupply;
 	}

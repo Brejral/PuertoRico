@@ -1,6 +1,5 @@
 package com.brejral.puertorico.game.role;
 
-import com.brejral.puertorico.game.GameHelper;
 import com.brejral.puertorico.game.player.Player;
 
 public class Role {
@@ -19,13 +18,13 @@ public class Role {
 		bonusCoins++;
 	}
 	
-	public void onRoleStart() {
-		GameHelper.getCurrentPlayerForTurn().addCoins(bonusCoins);
+	public void onRoleStart(Player player) {
+		player.addCoins(bonusCoins);
 		bonusCoins = 0;
 	}
 	
-	public void onAction() {
-		GameHelper.nextAction();
+	public void onAction(Player player) {
+		
 	}
 	
 	public void onRoleEnd() {

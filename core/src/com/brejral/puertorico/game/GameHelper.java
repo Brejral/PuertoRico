@@ -3,13 +3,8 @@ package com.brejral.puertorico.game;
 import java.util.List;
 
 import com.brejral.puertorico.game.bank.Bank;
-import com.brejral.puertorico.game.crop.Coffee;
-import com.brejral.puertorico.game.crop.Corn;
 import com.brejral.puertorico.game.crop.Crop;
-import com.brejral.puertorico.game.crop.Indigo;
 import com.brejral.puertorico.game.crop.Quarry;
-import com.brejral.puertorico.game.crop.Sugar;
-import com.brejral.puertorico.game.crop.Tobacco;
 import com.brejral.puertorico.game.player.Player;
 import com.brejral.puertorico.game.ship.Ship;
 
@@ -30,7 +25,7 @@ public class GameHelper {
 	}
 
 	public static Crop getCropFromBank(String className) {
-		List<Crop> crops = getBank().getCropSupply();
+		List<Crop> crops = GAME.getBank().getCropSupply();
 		for (Crop crop : crops) {
 			if (crop.getClass().getName().equals(className)) {
 				return crops.remove(crops.indexOf(crop));
@@ -40,11 +35,11 @@ public class GameHelper {
 	}
 
 	public static Quarry getQuarryFromBank() {
-		return getBank().getQuarrySupply().remove(0);
+		return GAME.getBank().getQuarrySupply().remove(0);
 	}
 	
 	public static List<Crop> getSettlerCropSupply() {
-		return getBank().getSettlerCropSupply();
+		return GAME.getBank().getSettlerCropSupply();
 	}
 
 	public static List<Player> getPlayers() {
@@ -61,31 +56,6 @@ public class GameHelper {
 	
 	public static void resupplySettlerShip(int openSlots) {
 		getBank().resupplySettlerShip(openSlots);
-	}
-	
-	public static void addGoodSupply(String cropName, int value) {
-		getBank().addGoodSupply(cropName, value);
-	}
-	
-	public static void subtractGoodSupply(String cropName, int value) {
-		getBank().subtractGoodSupply(cropName, value);
-	}
-	
-	public static int getCropPrice(String cropName) {
-		switch(cropName) {
-		case Corn.NAME:
-			return Corn.PRICE;
-		case Indigo.NAME:
-			return Indigo.PRICE;
-		case Sugar.NAME:
-			return Sugar.PRICE;
-		case Tobacco.NAME:
-			return Tobacco.PRICE;
-		case Coffee.NAME:
-			return Coffee.PRICE;
-		default:
-			return 0;
-		}
 	}
 	
 	public static void setLastRound() {

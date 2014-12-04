@@ -19,7 +19,7 @@ public class Player {
 	private boolean isGovenor = false, isTurn = false, isAction = false;
 	private List<Crop> crops = new ArrayList<Crop>(12);
 	private List<Building> buildings = new ArrayList<Building>(); //ArrayList of buildings counted top to bottom then left to right
-	private HashMap<String, Integer> goods = new HashMap<String, Integer>();
+	private HashMap<String, Integer> cropSupply = new HashMap<String, Integer>();
 	
 	public Player() {
 		
@@ -182,23 +182,15 @@ public class Player {
 	}
 
 	public HashMap<String, Integer> getCropSupply() {
-		return goods;
+		return cropSupply;
 	}
 	
-	public void setGood(String cropName, int value) {
-		goods.put(cropName, value);
+	public void setCropSupply(String cropName, int value) {
+		cropSupply.put(cropName, value);
 	}
 	
-	public void addGood(String cropName, int value) {
-		setGood(cropName, goods.get(cropName) + value);
-	}
-	
-	public void subtractGood(String cropName, int value) {
-		setGood(cropName, goods.get(cropName) - value);
-	}
-	
-	public int getNumberOfGoods(String cropName) {
-		return goods.get(cropName);
+	public void addCropSupply(String cropName, int value) {
+		setCropSupply(cropName, cropSupply.get(cropName) + value);
 	}
 	
 	public int getTotalPoints() {
