@@ -27,7 +27,7 @@ public class Game {
 	private void StartGame() {
 		Collections.shuffle(players, new Random(GameHelper.RAND_SEED));
 		Collections.shuffle(bank.getCropSupply(), new Random(GameHelper.RAND_SEED));
-		bank.setSettlerCrops();
+		bank.setSettlerCropsSupply();
 		switch(numberOfPlayers) {
 		case 3:
 			for (int i = 0; i < 3; i++) {

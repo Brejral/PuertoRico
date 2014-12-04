@@ -215,7 +215,7 @@ public class Bank {
 		return quarrySupply;
 	}
 
-	public void setSettlerCrops() {
+	public void setSettlerCropsSupply() {
 		for (int i = 0; i < settlerCropSupply.size(); i++) {
 			if (settlerCropSupply.get(i) == null) {
 				settlerCropSupply.set(i, cropSupply.get(0));
@@ -224,7 +224,7 @@ public class Bank {
 		}
 	}
 	
-	public List<Crop> getSettlerCrops() {
+	public List<Crop> getSettlerCropsSupply() {
 		return settlerCropSupply;
 	}
 

@@ -37,6 +37,10 @@ public class GameHelper {
 	public static Quarry getQuarryFromBank() {
 		return GAME.getBank().getQuarrySupply().remove(0);
 	}
+	
+	public static List<Crop> getSettlerCropSupply() {
+		return GAME.getBank().getSettlerCropsSupply();
+	}
 
 	public static List<Player> getPlayers() {
 		return getGame().getPlayers();
