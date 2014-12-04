@@ -1,6 +1,8 @@
 package com.brejral.puertorico.game.crop;
 
+
 public class Crop {
+	public static final String[] CROP_LIST = {"Corn", "Indigo", "Sugar", "Tobacco", "Coffee" };
 	private int sellingPrice;
 	private boolean isSettled;
 	private String name;

@@ -66,7 +66,6 @@ public class Bank {
 		initializeCargoShips();
 		initializeBuildingSupply();
 		settlerShip = new Ship();
-		settlerCropSupply = new ArrayList<Crop>(GameHelper.getNumberOfPlayers() + 1);
 		switch(GameHelper.getNumberOfPlayers()) {
 		case 3:
 			settlerShip.setSettlers(3);
