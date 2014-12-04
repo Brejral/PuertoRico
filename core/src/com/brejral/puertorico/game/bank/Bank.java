@@ -1,8 +1,10 @@
 package com.brejral.puertorico.game.bank;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import com.brejral.puertorico.game.GameHelper;
 import com.brejral.puertorico.game.building.CityHall;
@@ -57,6 +59,7 @@ public class Bank {
 	
 	public Bank() {
 		initializeCropSupply();
+		initializeSettlerCropSupply();
 		initializeGoodSupply();
 		initializeQuarrySupply();
 		initializeRoles();
@@ -86,6 +89,11 @@ public class Bank {
 		}
 	}
 
+	private void initializeSettlerCropSupply() {
+		settlerCropSupply = new ArrayList<Crop>(GameHelper.getNumberOfPlayers() + 1);
+		setSettlerCropSupply();
+	}
+
 	private void initializeQuarrySupply() {
 		quarrySupply = new ArrayList<Quarry>();
 		for (int i = 0; i < 8; i++) {
@@ -110,6 +118,7 @@ public class Bank {
 		for (int i = 0; i < 12; i++) {
 			cropSupply.add(new Indigo());
 		}
+		Collections.shuffle(cropSupply, new Random(GameHelper.RAND_SEED));
 	}
 	
 	private void initializeGoodSupply() {
@@ -215,16 +224,15 @@ public class Bank {
 		return quarrySupply;
 	}
 
-	public void setSettlerCropsSupply() {
-		for (int i = 0; i < settlerCropSupply.size(); i++) {
-			if (settlerCropSupply.get(i) == null) {
-				settlerCropSupply.set(i, cropSupply.get(0));
-				cropSupply.remove(0);
+	public void setSettlerCropSupply() {
+		for (int i = 0; i < GameHelper.getNumberOfPlayers() + 1; i++) {
+			if (settlerCropSupply.size() < i + 1) {
+				settlerCropSupply.add(cropSupply.remove(0));
 			}
 		}
 	}
 	
-	public List<Crop> getSettlerCropsSupply() {
+	public List<Crop> getSettlerCropSupply() {
 		return settlerCropSupply;
 	}
 

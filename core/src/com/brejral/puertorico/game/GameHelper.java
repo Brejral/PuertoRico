@@ -39,7 +39,7 @@ public class GameHelper {
 	}
 	
 	public static List<Crop> getSettlerCropSupply() {
-		return GAME.getBank().getSettlerCropsSupply();
+		return GAME.getBank().getSettlerCropSupply();
 	}
 
 	public static List<Player> getPlayers() {
