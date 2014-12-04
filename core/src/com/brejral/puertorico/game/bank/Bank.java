@@ -223,6 +223,10 @@ public class Bank {
 			}
 		}
 	}
+	
+	public List<Crop> getSettlerCrops() {
+		return settlerCropSupply;
+	}
 
 	public void resupplySettlerShip(int openSlots) {
 		int resupply = 0;

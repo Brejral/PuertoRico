@@ -13,6 +13,7 @@ import com.brejral.puertorico.user.User;
 
 public class Player {
 	private User user;
+	private String name;
 	private Role role;
 	private int points = 0, coins = 0, settlers = 0;
 	private boolean isGovenor = false, isTurn = false, isAction = false;
@@ -24,12 +25,20 @@ public class Player {
 		
 	}
 	
+	public Player(String name) {
+		this.name = name;
+	}
+	
 	public Player(User usr) {
 		user = usr;
 	}
 	
 	public User getUser() {
 		return user;
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	public void resetPlayer() {

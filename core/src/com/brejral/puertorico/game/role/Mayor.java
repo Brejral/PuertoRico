@@ -8,6 +8,10 @@ import com.brejral.puertorico.game.player.Player;
 
 public class Mayor extends Role {
 	public static final String NAME = "Mayor";
+	
+	public Mayor() {
+		super(NAME);
+	}
 
 	public void onRoleStart(Player player) {
 		super.onRoleStart(player);
