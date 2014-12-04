@@ -21,6 +21,7 @@ import com.brejral.puertorico.game.Game;
 import com.brejral.puertorico.game.GameHelper;
 import com.brejral.puertorico.game.crop.Coffee;
 import com.brejral.puertorico.game.crop.Corn;
+import com.brejral.puertorico.game.crop.Crop;
 import com.brejral.puertorico.game.crop.Indigo;
 import com.brejral.puertorico.game.crop.Quarry;
 import com.brejral.puertorico.game.crop.Sugar;
@@ -48,6 +49,17 @@ public class DesktopLauncher implements ActionListener {
     
     static JButton[] supplyCrops = new JButton[6];
     static JButton[] roles = new JButton[8];
+    
+    static JLabel[] playerCoinsLabel = new JLabel[5];
+    static JLabel[] playerPointsLabel = new JLabel[5];
+    static JLabel[] playerSettlersLabel = new JLabel[5];
+
+    static JLabel[] playerGoodsCoffeeLabel  = new JLabel[5];
+    static JLabel[] playerGoodsCornLabel = new JLabel[5];
+    static JLabel[] playerGoodsIndigoLabel = new JLabel[5];
+    static JLabel[] playerGoodsSugarLabel = new JLabel[5];
+    static JLabel[] playerGoodsTobaccoLabel = new JLabel[5];
+    static JLabel[] playerGoodsQuarryLabel = new JLabel[5];
     
     static JLabel messageLine;
     
@@ -116,6 +128,7 @@ public class DesktopLauncher implements ActionListener {
     {
         updateSupplies();
         updateGoods();
+        updatePlayers();
 	}
 
     /* ********************************************************************************************** */
@@ -154,6 +167,81 @@ public class DesktopLauncher implements ActionListener {
 
         int supplyGoodsTobacco = GameHelper.getBank().getGoodSupply().get(Tobacco.NAME);
         supplyGoodsTobaccoLabel.setText(Integer.toString(supplyGoodsTobacco));
+    }
+
+    /* ********************************************************************************************** */
+    private void updatePlayers()
+    {
+		List<Player> players = GameHelper.getPlayers();
+		int numPlayers = players.size();
+		for (int i=0; i<numPlayers; i++)
+		{
+            // Display the Number of Main Supplies Remaining
+            int supplyCoins = players.get(i).getCoins();
+            playerCoinsLabel[i].setText(Integer.toString(supplyCoins));
+
+            int supplyPoints = players.get(i).getPoints();
+            playerPointsLabel[i].setText(Integer.toString(supplyPoints));
+
+            int supplySettlers = players.get(i).getSettlers();
+            playerSettlersLabel[i].setText(Integer.toString(supplySettlers));
+
+            // List<Quarry> supplyGoodsQuarryList = GameHelper.getBank().getQuarrySupply();
+            // playerGoodsQuarryLabel[i].setText(Integer.toString(supplyGoodsQuarryList.size()));
+        }
+	}
+
+    /* ********************************************************************************************** */
+	private void createPlayerPanel(JPanel panel, int idx) {
+        Color[] playerColors = {Color.RED, new Color(0, 160, 0), Color.BLUE, Color.MAGENTA, new Color(0, 160, 160) };
+
+		Border playerLineBorder = BorderFactory.createLineBorder(playerColors[idx]);
+		TitledBorder playerBorder = BorderFactory.createTitledBorder(playerLineBorder, "Player " + (idx+1) + ":");
+        playerBorder.setTitleJustification(TitledBorder.LEFT);
+        playerBorder.setTitlePosition(TitledBorder.DEFAULT_POSITION);
+        playerBorder.setTitleColor(playerColors[idx]);
+
+		JPanel playerPanel = new JPanel();
+        playerPanel.setBorder(playerBorder);
+		playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.Y_AXIS));
+
+		TitledBorder supplyBorder = BorderFactory.createTitledBorder("Supplies:");
+        supplyBorder.setTitleJustification(TitledBorder.LEFT);
+        supplyBorder.setTitlePosition(TitledBorder.DEFAULT_POSITION);
+
+        JPanel supplyPanel = new JPanel(new GridLayout(1, 0), false);
+        supplyPanel.setBorder(supplyBorder);
+
+		                              createLabel(supplyPanel, "Coins");
+        playerCoinsLabel[idx]       = createLabel(supplyPanel, "0");
+		                              createLabel(supplyPanel, "Points");
+        playerPointsLabel[idx]      = createLabel(supplyPanel, "0");
+		                              createLabel(supplyPanel, "Settlers");
+        playerSettlersLabel[idx]    = createLabel(supplyPanel, "0");
+		                              createLabel(supplyPanel, Quarry.NAME);
+        playerGoodsQuarryLabel[idx] = createLabel(supplyPanel, "0");
+        playerPanel.add(supplyPanel);
+        
+		TitledBorder goodsBorder = BorderFactory.createTitledBorder("Goods:");
+        goodsBorder.setTitleJustification(TitledBorder.LEFT);
+        goodsBorder.setTitlePosition(TitledBorder.DEFAULT_POSITION);
+
+        JPanel goodsPanel = new JPanel(new GridLayout(1, 0), false);
+        goodsPanel.setBorder(goodsBorder);
+        
+		                               createLabel(goodsPanel, Coffee.NAME);
+        playerGoodsCoffeeLabel[idx]  = createLabel(goodsPanel, "0");
+		                               createLabel(goodsPanel, Corn.NAME);
+        playerGoodsCornLabel[idx]    = createLabel(goodsPanel, "0");
+		                               createLabel(goodsPanel, Indigo.NAME);
+        playerGoodsIndigoLabel[idx]  = createLabel(goodsPanel, "0");
+		                               createLabel(goodsPanel, Sugar.NAME);
+        playerGoodsSugarLabel[idx]   = createLabel(goodsPanel, "0");
+		                               createLabel(goodsPanel, Tobacco.NAME);
+        playerGoodsTobaccoLabel[idx] = createLabel(goodsPanel, "0");
+        playerPanel.add(goodsPanel);
+
+		panel.add(playerPanel);
     }
 
     /* ********************************************************************************************** */
@@ -205,11 +293,17 @@ public class DesktopLauncher implements ActionListener {
         JPanel cropsPanel = new JPanel(new GridLayout(1, 0), false);
         cropsPanel.setBorder(cropsBorder);
         
-        String[] tempCrops = {"Indigo", "Corn", "Coffee", "Sugar", "Tobacco", "Corn", "Coffee"};
-		int numPlayers = GameHelper.getNumberOfPlayers();
-		for (int i=0; i<numPlayers+1; i++)
+        // String[] tempCrops = {"Indigo", "Corn", "Coffee", "Sugar", "Tobacco", "Corn", "Coffee"};
+		// int numPlayers = GameHelper.getNumberOfPlayers();
+		// for (int i=0; i<numPlayers+1; i++)
+		// {
+			// supplyCrops[i] = createButton(cropsPanel, tempCrops[i], "chooseCrop " + tempCrops[i]);
+		// }
+        List<Crop> settlerCrops = GameHelper.getSettlerCropSupply();
+		for (int i=0; i<settlerCrops.size(); i++)
 		{
-			supplyCrops[i] = createButton(cropsPanel, tempCrops[i], "chooseCrop " + tempCrops[i]);
+			String name = settlerCrops.get(i).getName();
+			supplyCrops[i] = createButton(cropsPanel, name, "chooseCrop " + name);
 		}
         mainPanel.add(cropsPanel);
 
@@ -224,7 +318,7 @@ public class DesktopLauncher implements ActionListener {
 		int numRoles = rolesList.size();
 		for (int i=0; i<numRoles; i++)
 		{
-			String name = rolesList.get(i).getClass().toString().substring(39);
+			String name = rolesList.get(i).getName();
 			roles[i] = createButton(rolesPanel, name, "chooseRole " + name);
 		}
         mainPanel.add(rolesPanel);
@@ -234,6 +328,12 @@ public class DesktopLauncher implements ActionListener {
         JPanel messagePanel = new JPanel(new GridLayout(1, 0), false);
         messagePanel.setBorder(messageBorder);
         
+		int numPlayers = GameHelper.getNumberOfPlayers();
+		for (int i=0; i<numPlayers; i++)
+		{
+            createPlayerPanel(mainPanel, i);
+        }
+
         messageLine = createLabel(messagePanel, "...");
         mainPanel.add(messagePanel);
 
