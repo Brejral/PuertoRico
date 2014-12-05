@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.brejral.puertorico.game.GameHelper;
+import com.brejral.puertorico.game.building.LargeMarket;
 import com.brejral.puertorico.game.building.Office;
+import com.brejral.puertorico.game.building.SmallMarket;
 import com.brejral.puertorico.game.crop.Crop;
 import com.brejral.puertorico.game.player.Player;
 
@@ -25,7 +27,26 @@ public class Trader extends Role {
 		tradedCrops.add(cropName);
 		player.subtractGood(cropName, 1);
 		GameHelper.addGoodSupply(cropName, 1);
+		int price = GameHelper.getCropPrice(cropName);
+		price += player.getNumberActiveBuildings(SmallMarket.NAME);
+		price += 2 * player.getNumberActiveBuildings(LargeMarket.NAME);
+		price += player.didSelectRole() ? 1 : 0;
+		player.addCoins(price);
+		GameHelper.addCoinsToPlayerFromSupply(player, price);
 		super.onAction();
+		if (tradedCrops.size() == 4) {
+			onRoleEnd();
+		}
+	}
+	
+	public void onRoleEnd() {
+		if (tradedCrops.size() == 4) {
+			for (String cropName : tradedCrops) {
+				GameHelper.addGoodSupply(cropName, 1);
+			}
+			tradedCrops.clear();
+		}
+		super.onRoleEnd();
 	}
 	
 	public List<String> getTradableCropsForCurrentPlayer() {

@@ -23,7 +23,6 @@ import javax.swing.border.TitledBorder;
 
 import com.brejral.puertorico.game.Game;
 import com.brejral.puertorico.game.GameHelper;
-import com.brejral.puertorico.game.building.Building;
 import com.brejral.puertorico.game.crop.Coffee;
 import com.brejral.puertorico.game.crop.Corn;
 import com.brejral.puertorico.game.crop.Crop;

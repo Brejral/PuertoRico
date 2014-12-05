@@ -6,8 +6,19 @@ import java.util.List;
 
 import com.brejral.puertorico.game.GameHelper;
 import com.brejral.puertorico.game.building.Building;
+import com.brejral.puertorico.game.building.CoffeeRoaster;
+import com.brejral.puertorico.game.building.IndigoPlant;
+import com.brejral.puertorico.game.building.SmallIndigoPlant;
+import com.brejral.puertorico.game.building.SmallSugarMill;
+import com.brejral.puertorico.game.building.SugarMill;
+import com.brejral.puertorico.game.building.TobaccoStorage;
+import com.brejral.puertorico.game.crop.Coffee;
+import com.brejral.puertorico.game.crop.Corn;
 import com.brejral.puertorico.game.crop.Crop;
+import com.brejral.puertorico.game.crop.Indigo;
 import com.brejral.puertorico.game.crop.Quarry;
+import com.brejral.puertorico.game.crop.Sugar;
+import com.brejral.puertorico.game.crop.Tobacco;
 import com.brejral.puertorico.game.role.Role;
 import com.brejral.puertorico.user.User;
 
@@ -136,6 +147,29 @@ public class Player {
 		setRole(null);
 	}
 	
+	public int getNumberProductionSettlersForCrop(String cropName) {
+		List<String> buildingNames = new ArrayList<String>();
+		switch (cropName) {
+		case Indigo.NAME:
+			buildingNames.add(SmallIndigoPlant.NAME);
+			buildingNames.add(IndigoPlant.NAME);
+			break;
+		case Sugar.NAME:
+			buildingNames.add(SmallSugarMill.NAME);
+			buildingNames.add(SugarMill.NAME);
+			break;
+		case Tobacco.NAME:
+			buildingNames.add(TobaccoStorage.NAME);
+			break;
+		case Coffee.NAME:
+			buildingNames.add(CoffeeRoaster.NAME);
+			break;
+		default:
+			return 0;
+		}
+		return getSettlersForBuildings(buildingNames);
+	}
+	
 	public boolean hasActiveBuilding(String buildingName) {
 		for (Building building : getBuildings(buildingName)) {
 			if (building.isActive()) {
@@ -145,9 +179,23 @@ public class Player {
 		return false;
 	}
 	
+	public int getSettlersForBuildings(List<String> buildingNames) {
+		int settlers = 0;
+		for (Building building : getBuildings(buildingNames)) {
+			settlers += building.getSettlers();
+		}
+		return settlers;
+	}
+	
 	public int getNumberActiveBuildings(String buildingName) {
+		List<String> buildingNames = new ArrayList<String>();
+		buildingNames.add(buildingName);
+		return getNumberActiveBuildings(buildingNames);
+	}
+	
+	public int getNumberActiveBuildings(List<String> buildingNames) {
 		int activeBuildings = 0;
-		for (Building building : getBuildings(buildingName)) {
+		for (Building building : getBuildings(buildingNames)) {
 			if (building.isActive()) {
 				activeBuildings++;
 			}
@@ -155,14 +203,20 @@ public class Player {
 		return activeBuildings;
 	}
 	
-	public List<Building> getBuildings(String buildingName) {
+	public List<Building> getBuildings(List<String> buildingNames) {
 		List<Building> foundBuildings = new ArrayList<Building>();
 		for (Building building : buildings) {
-			if (building.getName().equals(buildingName)) {
+			if (buildingNames.contains(building.getName())) {
 				foundBuildings.add(building);
 			}
 		}
 		return foundBuildings;
+	}
+	
+	public List<Building> getBuildings(String buildingName) {
+		List<String> buildingNames = new ArrayList<String>();
+		buildingNames.add(buildingName);
+		return getBuildings(buildingNames);
 	}
 
 	public List<Building> getBuildings() {
@@ -177,8 +231,18 @@ public class Player {
 		return openSlots;
 	}
 
-	public void produceCrops() {
-		
+	public HashMap<String, Integer> getGoodsPlayerCanProduce() {
+		HashMap<String, Integer> goods = new HashMap<String, Integer>();
+		for (String cropName : Crop.CROP_LIST) {
+			int settledCrops = getNumberOfSettledCrops(cropName);
+			int productionSettlers = getNumberProductionSettlersForCrop(cropName);
+			if (Corn.NAME.equals(cropName)) {
+				goods.put(cropName, settledCrops);
+			} else {
+				goods.put(cropName, Math.min(settledCrops, productionSettlers));
+			}
+		}
+		return goods;
 	}
 
 	public HashMap<String, Integer> getCropSupply() {
@@ -218,5 +282,9 @@ public class Player {
 
 	public void addSettlers(int value) {
 		this.settlers += value;
+	}
+	
+	public boolean didSelectRole() {
+		return isAction && isTurn;
 	}
 }

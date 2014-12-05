@@ -202,6 +202,10 @@ public class Bank {
 	public void addCoinSupply(int value) {
 		this.coinSupply += value;
 	}
+	
+	public void subtractCoinSupply(int value) {
+		this.coinSupply -= value;
+	}
 
 	public int getPointSupply() {
 		return pointSupply;
