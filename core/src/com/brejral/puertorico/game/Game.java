@@ -26,49 +26,21 @@ public class Game {
 	
 	private void StartGame() {
 		Collections.shuffle(players, new Random(GameHelper.RAND_SEED));
-		switch(numberOfPlayers) {
-		case 3:
-			for (int i = 0; i < 3; i++) {
-				Player player = players.get(i);
-				if (i == 0) {
-					player.setGovenor(true);
-				}
-				if (i < 2) {
-					player.addCrop(Indigo.NAME);
-				} else {
-					player.addCrop(Corn.NAME);
-				}
-				player.addCoins(2);
+		int numGetCorn = 2;
+		if (numberOfPlayers == 3) {
+			numGetCorn = 1;
+		}
+		for (int i = 0; i < numberOfPlayers; i++) {
+			Player player = players.get(i);
+			if (i == 0) {
+				player.setGovenor(true);
 			}
-			break;
-		case 4:
-			for (int i = 0; i < 3; i++) {
-				Player player = players.get(i);
-				if (i == 0) {
-					player.setGovenor(true);
-				}
-				if (i < 2) {
-					player.addCrop(Indigo.NAME);
-				} else {
-					player.addCrop(Corn.NAME);
-				}
-				player.addCoins(3);
+			if (i < numberOfPlayers - numGetCorn) {
+				player.addCrop(Indigo.NAME);
+			} else {
+				player.addCrop(Corn.NAME);
 			}
-			break;
-		case 5:
-			for (int i = 0; i < 3; i++) {
-				Player player = players.get(i);
-				if (i == 0) {
-					player.setGovenor(true);
-				}
-				if (i < 3) {
-					player.addCrop(Indigo.NAME);
-				} else {
-					player.addCrop(Corn.NAME);
-				}
-				player.addCoins(4);
-			}
-			break;
+			player.addCoins(numberOfPlayers-1);
 		}
 	}
 	

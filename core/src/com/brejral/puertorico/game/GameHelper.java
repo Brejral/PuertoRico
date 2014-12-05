@@ -29,10 +29,10 @@ public class GameHelper {
 		return getGame().getNumberOfPlayers();
 	}
 
-	public static Crop getCropFromBank(String className) {
+	public static Crop getCropFromBank(String cropName) {
 		List<Crop> crops = getBank().getCropSupply();
 		for (Crop crop : crops) {
-			if (crop.getClass().getName().equals(className)) {
+			if (crop.getName().equals(cropName)) {
 				return crops.remove(crops.indexOf(crop));
 			}
 		}

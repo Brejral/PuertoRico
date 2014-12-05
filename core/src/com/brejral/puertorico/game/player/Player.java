@@ -114,8 +114,8 @@ public class Player {
 		return settledCrops;
 	}
 	
-	public void addCrop(String className) {
-		Crop crop = GameHelper.getCropFromBank(className);
+	public void addCrop(String cropName) {
+		Crop crop = GameHelper.getCropFromBank(cropName);
 		crops.add(crop);
 	}
 	
