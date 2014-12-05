@@ -286,4 +286,8 @@ public class Bank {
 			role.addBonusCoin();
 		}
 	}
+
+	public HashMap<String, Integer> getBuildingSupply() {
+		return buildingSupply;
+	}
 }
