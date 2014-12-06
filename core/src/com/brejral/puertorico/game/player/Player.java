@@ -130,6 +130,10 @@ public class Player {
 		crops.add(crop);
 	}
 	
+	public void addCrop(Crop crop) {
+		crops.add(crop);
+	}
+	
 	public void addQuarry() {
 		Quarry quarry = GameHelper.getQuarryFromBank();
 		crops.add(quarry);

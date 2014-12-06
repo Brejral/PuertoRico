@@ -15,7 +15,6 @@ public class Mayor extends Role {
 
 	public void onRoleStart() {
 		super.onRoleStart();
-		Player player = GameHelper.getCurrentPlayerForTurn();
 		List<Integer> newSettlersList = new ArrayList<Integer>(GameHelper.getNumberOfPlayers());
 		int modSettlers = GameHelper.getSettlerShip().getSettlers() % GameHelper.getNumberOfPlayers();
 		int settlersPerPlayer = GameHelper.getSettlerShip().getSettlers()/GameHelper.getNumberOfPlayers();
@@ -29,7 +28,6 @@ public class Mayor extends Role {
 			}
 			newSettlersList.set(i, value);
 		}
-		
 	}
 	
 	public void onRoleEnd() {

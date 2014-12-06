@@ -1,7 +1,6 @@
 package com.brejral.puertorico.game.role;
 
 import com.brejral.puertorico.game.GameHelper;
-import com.brejral.puertorico.game.player.Player;
 
 public class Role {
 	protected int bonusCoins;
