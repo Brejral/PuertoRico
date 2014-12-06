@@ -1,6 +1,7 @@
 package com.brejral.puertorico.desktop;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -23,6 +25,7 @@ import javax.swing.border.TitledBorder;
 
 import com.brejral.puertorico.game.Game;
 import com.brejral.puertorico.game.GameHelper;
+import com.brejral.puertorico.game.building.Building;
 import com.brejral.puertorico.game.crop.Coffee;
 import com.brejral.puertorico.game.crop.Corn;
 import com.brejral.puertorico.game.crop.Crop;
@@ -40,6 +43,7 @@ public class DesktopLauncher implements ActionListener {
 	
     /* ********************************************************************************************** */
 	// Global GUI items
+	// :TODO: Change static variables to private or protected I think
     static JLabel supplyCoinsLabel;
     static JLabel supplyPointsLabel;
     static JLabel supplySettlersLabel;
@@ -66,6 +70,7 @@ public class DesktopLauncher implements ActionListener {
     static JLabel[] playerGoodsTobaccoLabel = new JLabel[5];
     static JLabel[] playerGoodsQuarryLabel = new JLabel[5];
     
+    JTabbedPane tabbedPlayerPane = null;
     static int playerBuildingsMax = 12;
     static JButton[][] playerBuildings = new JButton[5][playerBuildingsMax];
 
@@ -74,6 +79,8 @@ public class DesktopLauncher implements ActionListener {
 
     static JLabel messageLine;
     
+    Color[] playerColors = {Color.RED, new Color(0, 160, 0), Color.BLUE, Color.MAGENTA, new Color(0, 160, 160) };
+
     /* ********************************************************************************************** */
     /**
      * Main Constructor
@@ -112,6 +119,18 @@ public class DesktopLauncher implements ActionListener {
 	private JLabel createLabel(JPanel panel, String label) {
 		JLabel jlabel = new JLabel(label);
 		panel.add(jlabel);
+		return jlabel;
+	}
+
+    /* ********************************************************************************************** */
+	private JLabel createLabelPair(JPanel panel, String label) {
+		JPanel labelPanel = new JPanel();
+		labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
+		labelPanel.add(new JLabel(label));
+		labelPanel.add(new JLabel(" "));
+		JLabel jlabel = new JLabel("0");
+		labelPanel.add(jlabel);
+		panel.add(labelPanel);
 		return jlabel;
 	}
 
@@ -188,36 +207,50 @@ public class DesktopLauncher implements ActionListener {
 		int numPlayers = players.size();
 		for (int i=0; i<numPlayers; i++) {
 
+			Player player = players.get(i);
+			String name = player.getName();
+			
+			if (name == null) {
+				name = "Player " + (i+1);
+			}
+			
+			// White King \u2654 or Black King \u265A or Army Star \u272F or Outline Star \u2729
+			tabbedPlayerPane.setTitleAt(i, name + (player.isGovenor() ? " \u2736" : "") + (player.isTurn() ? " \u21D0" : ""));
+			
             // Display the Number of Main Supplies Remaining
-            int supplyCoins = players.get(i).getCoins();
+            int supplyCoins = player.getCoins();
             playerCoinsLabel[i].setText(Integer.toString(supplyCoins));
 
-            int supplyPoints = players.get(i).getPoints();
+            int supplyPoints = player.getPoints();
             playerPointsLabel[i].setText(Integer.toString(supplyPoints));
 
-            int supplySettlers = players.get(i).getSettlers();
+            int supplySettlers = player.getSettlers();
             playerSettlersLabel[i].setText(Integer.toString(supplySettlers));
 
             // List<Quarry> supplyGoodsQuarryList = GameHelper.getBank().getQuarrySupply();
             // playerGoodsQuarryLabel[i].setText(Integer.toString(supplyGoodsQuarryList.size()));
             
             // Display the Buildings owned by this Player
-            List<Building> ownedBuildings = players.get(i).getBuildings();
+            List<Building> ownedBuildings = player.getBuildings();
             for (int j=0; j<playerBuildingsMax; j++) {
             	if (j < ownedBuildings.size()) {
-            		playerBuildings[i][j].setText(ownedBuildings.get(j).getName());
+            		Building building = ownedBuildings.get(j);
+            		name = building.getName() + (building.isActive() ? "\u25A0" : "\u25A1");
+            		playerBuildings[i][j].setText(name);
             	} else {
-            		playerBuildings[i][j].setText("<empty>");
+            		playerBuildings[i][j].setText(" ");
             	}
             }
             
             // Display the Crops owned by this Player
-            List<Crop> ownedCrops = players.get(i).getCrops();
+            List<Crop> ownedCrops = player.getCrops();
             for (int j=0; j<playerCropsMax; j++) {
             	if (j < ownedCrops.size()) {
-            		playerCrops[i][j].setText(ownedCrops.get(j).getName());
+            		Crop crop = ownedCrops.get(j);
+            		name = crop.getName() + " " + (crop.isSettled() ? "\u25A0" : "\u25A1");
+            		playerCrops[i][j].setText(name);
             	} else {
-            		playerCrops[i][j].setText("<empty>");
+            		playerCrops[i][j].setText(" ");
             	}
             }
         }
@@ -226,20 +259,15 @@ public class DesktopLauncher implements ActionListener {
     /* ********************************************************************************************** */
 	// private void createPlayerPanel(JPanel panel, int idx) {
 	private void createPlayerPanel(JTabbedPane pane, int idx) {
-        Color[] playerColors = {Color.RED, new Color(0, 160, 0), Color.BLUE, Color.MAGENTA, new Color(0, 160, 160) };
 
         String name = "Player " + (idx+1);
-
-        // Main Player Outer Border
-		// Border playerLineBorder = BorderFactory.createLineBorder(playerColors[idx]);
-		// TitledBorder playerBorder = BorderFactory.createTitledBorder(playerLineBorder, name + ":");
-        // playerBorder.setTitleJustification(TitledBorder.LEFT);
-        // playerBorder.setTitlePosition(TitledBorder.DEFAULT_POSITION);
-        // playerBorder.setTitleColor(playerColors[idx]);
 
 		JPanel playerPanel = new JPanel();
         // playerPanel.setBorder(playerBorder);
 		playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.Y_AXIS));
+
+		JPanel subPanel = new JPanel();
+		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.X_AXIS));
 
 		// Player Supplies
 		TitledBorder supplyBorder = BorderFactory.createTitledBorder("Supplies:");
@@ -250,15 +278,11 @@ public class DesktopLauncher implements ActionListener {
         JPanel supplyPanel = new JPanel(new GridLayout(1, 0), false);
         supplyPanel.setBorder(supplyBorder);
 
-		                              createLabel(supplyPanel, "Coins");
-        playerCoinsLabel[idx]       = createLabel(supplyPanel, "0");
-		                              createLabel(supplyPanel, "Points");
-        playerPointsLabel[idx]      = createLabel(supplyPanel, "0");
-		                              createLabel(supplyPanel, "Settlers");
-        playerSettlersLabel[idx]    = createLabel(supplyPanel, "0");
-		                              createLabel(supplyPanel, Quarry.NAME);
-        playerGoodsQuarryLabel[idx] = createLabel(supplyPanel, "0");
-        playerPanel.add(supplyPanel);
+        playerCoinsLabel[idx]       = createLabelPair(supplyPanel, "Coins");
+        playerPointsLabel[idx]      = createLabelPair(supplyPanel, "Points");
+        playerSettlersLabel[idx]    = createLabelPair(supplyPanel, "Settlers");
+        playerGoodsQuarryLabel[idx] = createLabelPair(supplyPanel, Quarry.NAME);
+        subPanel.add(supplyPanel);
         
         // Player Goods
 		TitledBorder goodsBorder = BorderFactory.createTitledBorder("Goods:");
@@ -269,17 +293,14 @@ public class DesktopLauncher implements ActionListener {
         JPanel goodsPanel = new JPanel(new GridLayout(1, 0), false);
         goodsPanel.setBorder(goodsBorder);
         
-		                               createLabel(goodsPanel, Coffee.NAME);
-        playerGoodsCoffeeLabel[idx]  = createLabel(goodsPanel, "0");
-		                               createLabel(goodsPanel, Corn.NAME);
-        playerGoodsCornLabel[idx]    = createLabel(goodsPanel, "0");
-		                               createLabel(goodsPanel, Indigo.NAME);
-        playerGoodsIndigoLabel[idx]  = createLabel(goodsPanel, "0");
-		                               createLabel(goodsPanel, Sugar.NAME);
-        playerGoodsSugarLabel[idx]   = createLabel(goodsPanel, "0");
-		                               createLabel(goodsPanel, Tobacco.NAME);
-        playerGoodsTobaccoLabel[idx] = createLabel(goodsPanel, "0");
-        playerPanel.add(goodsPanel);
+        playerGoodsCoffeeLabel[idx]  = createLabelPair(goodsPanel, Coffee.NAME);
+        playerGoodsCornLabel[idx]    = createLabelPair(goodsPanel, Corn.NAME);
+        playerGoodsIndigoLabel[idx]  = createLabelPair(goodsPanel, Indigo.NAME);
+        playerGoodsSugarLabel[idx]   = createLabelPair(goodsPanel, Sugar.NAME);
+        playerGoodsTobaccoLabel[idx] = createLabelPair(goodsPanel, Tobacco.NAME);
+        subPanel.add(goodsPanel);
+
+        playerPanel.add(subPanel);
 
         // Player Buildings
 		TitledBorder playerBuildingsBorder = BorderFactory.createTitledBorder("Buildings:");
@@ -322,6 +343,9 @@ public class DesktopLauncher implements ActionListener {
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
+		JPanel subPanel = new JPanel();
+		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.X_AXIS));
+
 		// Supplies
 		TitledBorder supplyBorder = BorderFactory.createTitledBorder("Supplies:");
         supplyBorder.setTitleJustification(TitledBorder.LEFT);
@@ -331,16 +355,11 @@ public class DesktopLauncher implements ActionListener {
         JPanel supplyPanel = new JPanel(new GridLayout(1, 0), false);
         supplyPanel.setBorder(supplyBorder);
 
-		                          createLabel(supplyPanel, "Coins");
-        supplyCoinsLabel        = createLabel(supplyPanel, "0");
-		                          createLabel(supplyPanel, "Points");
-        supplyPointsLabel       = createLabel(supplyPanel, "0");
-		                          createLabel(supplyPanel, "Settlers");
-        supplySettlersLabel     = createLabel(supplyPanel, "0");
-		                          createLabel(supplyPanel, Quarry.NAME);
-        supplyGoodsQuarryLabel  = createLabel(supplyPanel, "0");
-        mainPanel.add(supplyPanel);
-        // Does nothing - mainPanel.add(Box.createRigidArea(new Dimension(20, 0)));
+        supplyCoinsLabel        = createLabelPair(supplyPanel, "Coins");
+        supplyPointsLabel       = createLabelPair(supplyPanel, "Points");
+        supplySettlersLabel     = createLabelPair(supplyPanel, "Settlers");
+        supplyGoodsQuarryLabel  = createLabelPair(supplyPanel, Quarry.NAME);
+        subPanel.add(supplyPanel);
         
         // Goods
 		TitledBorder goodsBorder = BorderFactory.createTitledBorder("Goods:");
@@ -351,17 +370,14 @@ public class DesktopLauncher implements ActionListener {
         JPanel goodsPanel = new JPanel(new GridLayout(1, 0), false);
         goodsPanel.setBorder(goodsBorder);
         
-		                          createLabel(goodsPanel, Coffee.NAME);
-        supplyGoodsCoffeeLabel  = createLabel(goodsPanel, "0");
-		                          createLabel(goodsPanel, Corn.NAME);
-        supplyGoodsCornLabel    = createLabel(goodsPanel, "0");
-		                          createLabel(goodsPanel, Indigo.NAME);
-        supplyGoodsIndigoLabel  = createLabel(goodsPanel, "0");
-		                          createLabel(goodsPanel, Sugar.NAME);
-        supplyGoodsSugarLabel   = createLabel(goodsPanel, "0");
-		                          createLabel(goodsPanel, Tobacco.NAME);
-        supplyGoodsTobaccoLabel = createLabel(goodsPanel, "0");
-        mainPanel.add(goodsPanel);
+        supplyGoodsCoffeeLabel  = createLabelPair(goodsPanel, Coffee.NAME);
+        supplyGoodsCornLabel    = createLabelPair(goodsPanel, Corn.NAME);
+        supplyGoodsIndigoLabel  = createLabelPair(goodsPanel, Indigo.NAME);
+        supplyGoodsSugarLabel   = createLabelPair(goodsPanel, Sugar.NAME);
+        supplyGoodsTobaccoLabel = createLabelPair(goodsPanel, Tobacco.NAME);
+        subPanel.add(goodsPanel);
+
+        mainPanel.add(subPanel);
 
         // Roles
 		TitledBorder rolesBorder = BorderFactory.createTitledBorder("Roles:");
@@ -389,12 +405,7 @@ public class DesktopLauncher implements ActionListener {
         JPanel cropsPanel = new JPanel(new GridLayout(1, 0), false);
         cropsPanel.setBorder(cropsBorder);
         
-        // String[] tempCrops = {"Indigo", "Corn", "Coffee", "Sugar", "Tobacco", "Corn", "Coffee"};
-		// int numPlayers = GameHelper.getNumberOfPlayers();
-		// for (int i=0; i<numPlayers+1; i++)
-		// {
-			// supplyCrops[i] = createButton(cropsPanel, tempCrops[i], "chooseCrop " + tempCrops[i]);
-		// }
+        // Crops to pick for Settling
         List<Crop> settlerCrops = GameHelper.getSettlerCropSupply();
 		for (int i=0; i<settlerCrops.size(); i++) {
 			String name = settlerCrops.get(i).getName();
@@ -426,7 +437,7 @@ public class DesktopLauncher implements ActionListener {
         mainPanel.add(buildingsPanel);
 
         // Players
-        JTabbedPane tabbedPlayerPane = new JTabbedPane();
+        tabbedPlayerPane = new JTabbedPane();
 		int numPlayers = GameHelper.getNumberOfPlayers();
 		for (int i=0; i<numPlayers; i++) {
             createPlayerPanel(tabbedPlayerPane, i);
