@@ -8,7 +8,7 @@ public class IndigoPlant extends Building {
 	public IndigoPlant() {
 		super(NAME);
 		setIsProduction(true);
-		setCost(3);
+		setPrice(3);
 		setSettlerSlots(3);
 		setCrop(Indigo.NAME);
 		setPoints(2);

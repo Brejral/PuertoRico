@@ -8,7 +8,7 @@ public class CoffeeRoaster extends Building {
 	public CoffeeRoaster() {
 		super(NAME);
 		setIsProduction(true);
-		setCost(6);
+		setPrice(6);
 		setPoints(3);
 		setSettlerSlots(2);
 		setCrop(Coffee.NAME);

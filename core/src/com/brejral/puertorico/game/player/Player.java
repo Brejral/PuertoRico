@@ -291,4 +291,14 @@ public class Player {
 	public boolean didSelectRole() {
 		return isAction && isTurn;
 	}
+	
+	public int getPriceOfBuildingForPlayer(String buildingName) {
+		int price = Building.getPrice(buildingName);
+		int discount = Math.min(getNumberOfSettledCrops(Quarry.NAME), Building.getPoints(buildingName)) + (isTurn ? 1 : 0);
+		return price - discount;
+	}
+	
+	public boolean canAffordBuilding(String buildingName) {
+		return getPriceOfBuildingForPlayer(buildingName) <= coins;
+	}
 }

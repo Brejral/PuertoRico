@@ -5,7 +5,7 @@ public class Office extends Building {
 
 	public Office() {
 		super(NAME);
-		setCost(5);
+		setPrice(5);
 		setPoints(2);
 	}
 }

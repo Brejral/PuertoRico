@@ -5,7 +5,7 @@ public class Factory extends Building {
 
 	public Factory() {
 		super(NAME);
-		setCost(7);
+		setPrice(7);
 		setPoints(3);
 	}
 }

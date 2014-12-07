@@ -7,7 +7,7 @@ public class Fortress extends Building {
 
 	public Fortress() {
 		super(NAME);
-		setCost(10);
+		setPrice(10);
 		setPoints(4);
 		setSize(2);
 	}

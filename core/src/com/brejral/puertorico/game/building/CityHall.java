@@ -7,7 +7,7 @@ public class CityHall extends Building {
 
 	public CityHall() {
 		super(NAME);
-		setCost(10);
+		setPrice(10);
 		setPoints(4);
 		setSize(2);
 	}

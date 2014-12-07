@@ -9,7 +9,7 @@ public class SugarMill extends Building {
 		super(NAME);
 		setIsProduction(true);
 		setSettlerSlots(3);
-		setCost(4);
+		setPrice(4);
 		setCrop(Sugar.NAME);
 		setPoints(2);
 	}

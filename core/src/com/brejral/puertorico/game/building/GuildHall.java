@@ -7,7 +7,7 @@ public class GuildHall extends Building {
 
 	public GuildHall() {
 		super(NAME);
-		setCost(10);
+		setPrice(10);
 		setPoints(4);
 		setSize(2);
 	}

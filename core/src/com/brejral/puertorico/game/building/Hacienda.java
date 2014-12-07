@@ -5,7 +5,7 @@ public class Hacienda extends Building {
 
 	public Hacienda(){
 		super(NAME);
-		setCost(2);
+		setPrice(2);
 		setPoints(1);
 	}
 }

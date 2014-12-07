@@ -5,7 +5,7 @@ public class University extends Building {
 	
 	public University() {
 		super(NAME);
-		setCost(8);
+		setPrice(8);
 		setPoints(3);
 	}
 }

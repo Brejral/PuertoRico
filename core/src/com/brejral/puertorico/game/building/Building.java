@@ -1,10 +1,11 @@
 package com.brejral.puertorico.game.building;
 
+import com.brejral.puertorico.AppHelper;
 import com.brejral.puertorico.game.player.Player;
 
 public class Building {
 	private String name;
-	private int size = 1, settlerSlots = 1, settlers, cost, points;
+	private int size = 1, settlerSlots = 1, settlers, price, points;
 	private boolean isProduction = false;
 	private String crop;
 	
@@ -44,12 +45,12 @@ public class Building {
 		this.settlers = settlers;
 	}
 	
-	public int getCost() {
-		return cost;
+	public int getPrice() {
+		return price;
 	}
 	
-	protected void setCost(int value) {
-		this.cost = value;
+	protected void setPrice(int value) {
+		this.price = value;
 	}
 	
 	public int getPoints() {
@@ -97,5 +98,15 @@ public class Building {
 	
 	public boolean isSmallProduction() {
 		return isProduction && size == 1;
+	}
+	
+	public static int getPrice(String buildingName) {
+		Building building = (Building)AppHelper.createObject(buildingName);
+		return building.getPrice();
+	}
+	
+	public static int getPoints(String buildingName) {
+		Building building = (Building)AppHelper.createObject(buildingName);
+		return building.getPoints();
 	}
 }

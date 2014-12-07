@@ -5,7 +5,7 @@ public class Harbor extends Building {
 
 	public Harbor() {
 		super(NAME);
-		setCost(8);
+		setPrice(8);
 		setPoints(3);
 	}
 }

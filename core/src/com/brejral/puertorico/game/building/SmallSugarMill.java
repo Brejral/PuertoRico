@@ -9,7 +9,7 @@ public class SmallSugarMill extends Building {
 		super(NAME);
 		setIsProduction(true);
 		setCrop(Sugar.NAME);
-		setCost(2);
+		setPrice(2);
 		setPoints(1);
 	}
 

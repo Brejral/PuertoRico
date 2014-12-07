@@ -5,7 +5,7 @@ public class SmallWarehouse extends Building {
 
 	public SmallWarehouse() {
 		super(NAME);
-		setCost(3);
+		setPrice(3);
 		setPoints(1);
 	}
 }

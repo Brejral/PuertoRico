@@ -8,7 +8,7 @@ public class TobaccoStorage extends Building {
 	public TobaccoStorage() {
 		super(NAME);
 		setIsProduction(true);
-		setCost(5);
+		setPrice(5);
 		setPoints(3);
 		setSettlerSlots(3);
 		setCrop(Tobacco.NAME);

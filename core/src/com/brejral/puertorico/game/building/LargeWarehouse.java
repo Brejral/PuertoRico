@@ -5,5 +5,7 @@ public class LargeWarehouse extends Building {
 
 	public LargeWarehouse() {
 		super(NAME);
+		setPrice(6);
+		setPoints(2);
 	}
 }

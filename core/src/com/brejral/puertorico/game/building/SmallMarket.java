@@ -5,7 +5,7 @@ public class SmallMarket extends Building {
 
 	public SmallMarket() {
 		super(NAME);
-		setCost(1);
+		setPrice(1);
 		setPoints(1);
 	}
 }

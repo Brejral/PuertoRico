@@ -7,7 +7,7 @@ public class CustomsHouse extends Building {
 
 	public CustomsHouse() {
 		super(NAME);
-		setCost(10);
+		setPrice(10);
 		setPoints(4);
 		setSize(2);
 	}

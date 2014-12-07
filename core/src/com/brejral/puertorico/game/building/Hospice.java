@@ -5,7 +5,7 @@ public class Hospice extends Building {
 
 	public Hospice() {
 		super(NAME);
-		setCost(4);
+		setPrice(4);
 		setPoints(2);
 	}
 }

@@ -5,7 +5,7 @@ public class LargeMarket extends Building {
 
 	public LargeMarket() {
 		super(NAME);
-		setCost(5);
+		setPrice(5);
 		setPoints(2);
 	}
 }

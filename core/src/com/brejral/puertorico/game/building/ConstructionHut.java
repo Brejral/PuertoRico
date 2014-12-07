@@ -5,7 +5,7 @@ public class ConstructionHut extends Building {
 
 	public ConstructionHut() {
 		super(NAME);
-		setCost(2);
+		setPrice(2);
 		setPoints(1);
 	}
 }

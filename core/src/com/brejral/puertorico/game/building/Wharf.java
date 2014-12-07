@@ -5,7 +5,7 @@ public class Wharf extends Building {
 
 	public Wharf() {
 		super(NAME);
-		setCost(9);
+		setPrice(9);
 		setPoints(3);
 	}
 }

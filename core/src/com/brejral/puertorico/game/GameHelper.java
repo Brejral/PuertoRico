@@ -1,6 +1,7 @@
 package com.brejral.puertorico.game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -78,6 +79,10 @@ public class GameHelper {
 
 	public static Ship getSettlerShip() {
 		return getBank().getSettlerShip();
+	}
+	
+	public static HashMap<String, Integer> getBuildingSupply() {
+		return getBank().getBuildingSupply();
 	}
 	
 	public static void setSettlerCropSupply() {
