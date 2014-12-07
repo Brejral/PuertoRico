@@ -27,7 +27,7 @@ public class Player {
 	private String name;
 	private Role role;
 	private int points = 0, coins = 0, settlers = 0;
-	private boolean isGovenor = false, isTurn = false, isAction = false;
+	private boolean isGovernor = false, isTurn = false, isAction = false;
 	private List<Crop> crops = new ArrayList<Crop>(12);
 	private List<Building> buildings = new ArrayList<Building>(); //ArrayList of buildings counted top to bottom then left to right
 	private HashMap<String, Integer> goods = new HashMap<String, Integer>();
@@ -77,12 +77,12 @@ public class Player {
 		points += value;
 	}
 
-	public boolean isGovenor() {
-		return isGovenor;
+	public boolean isGovernor() {
+		return isGovernor;
 	}
 
-	public void setGovenor(boolean isGovenor) {
-		this.isGovenor = isGovenor;
+	public void setGovenor(boolean isGovernor) {
+		this.isGovernor = isGovernor;
 	}
 	
 	public boolean isTurn() {

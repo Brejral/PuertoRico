@@ -117,7 +117,7 @@ public class GameHelper {
 		getGame().setLastRound();
 	}
 
-	// Moves the govenor position
+	// Moves the governor position
 	public static void nextRound() {
 		getGame().nextRound();
 	}

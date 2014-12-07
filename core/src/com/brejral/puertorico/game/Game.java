@@ -26,14 +26,20 @@ public class Game {
 	
 	private void StartGame() {
 		Collections.shuffle(players, new Random(GameHelper.RAND_SEED));
+
+		// Decide how many players get Corn
 		int numGetCorn = 2;
 		if (numberOfPlayers == 3) {
 			numGetCorn = 1;
 		}
+
+		// Setup the Players
 		for (int i = 0; i < numberOfPlayers; i++) {
 			Player player = players.get(i);
 			if (i == 0) {
 				player.setGovenor(true);
+				player.setTurn(true);
+				player.setAction(true);
 			}
 			if (i < numberOfPlayers - numGetCorn) {
 				player.addCrop(Indigo.NAME);
@@ -112,7 +118,7 @@ public class Game {
 	
 	public Player getCurrentPlayerForRound() {
 		for (Player player : players) {
-			if (player.isGovenor()) {
+			if (player.isGovernor()) {
 				return player;
 			}
 		}
