@@ -2,13 +2,11 @@ package com.brejral.puertorico.desktop;
 
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
@@ -33,8 +31,11 @@ import com.brejral.puertorico.game.crop.Sugar;
 import com.brejral.puertorico.game.crop.Tobacco;
 import com.brejral.puertorico.game.player.Player;
 import com.brejral.puertorico.game.role.Builder;
+import com.brejral.puertorico.game.role.Captain;
+import com.brejral.puertorico.game.role.Mayor;
 import com.brejral.puertorico.game.role.Role;
 import com.brejral.puertorico.game.role.Settler;
+import com.brejral.puertorico.game.role.Trader;
 
 // Tim import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 // Tim import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
@@ -43,7 +44,6 @@ public class DesktopLauncher implements ActionListener {
 
 	/* ********************************************************************************************** */
 	// Global GUI items
-	// :TODO: Change static variables to private or protected I think
 	JLabel supplyCoinsLabel;
 	JLabel supplyPointsLabel;
 	JLabel supplySettlersLabel;
@@ -62,6 +62,15 @@ public class DesktopLauncher implements ActionListener {
 
 	JPanel buildingsPanel = null;
 	JButton[] buildings = new JButton[50];
+
+	JPanel colonistShipPanel;
+	JLabel colonistShip;
+
+	JPanel cargoShipsPanel;
+	JButton[] cargoShips = new JButton[3];
+	
+	JPanel tradingHousePanel;
+	JLabel tradingHouse;
 
 	JLabel[] playerCoinsLabel = new JLabel[5];
 	JLabel[] playerPointsLabel = new JLabel[5];
@@ -171,6 +180,9 @@ public class DesktopLauncher implements ActionListener {
 		updateGoods();
 		updateSettlerCrops();
 		updateBuildings();
+		updateColonistShip();
+		updateCargoShips();
+		updateTradingHouse();
 		updatePlayers();
 
 	}
@@ -267,6 +279,57 @@ public class DesktopLauncher implements ActionListener {
 			settlerCrops[i].setEnabled(enabled);
 		}
 		settlerCropsPanel.setEnabled(enabled);
+	}
+
+	/* ********************************************************************************************** */
+	private void updateColonistShip() {
+		Role role = GameHelper.getCurrentRole();
+		boolean enabled = false;
+		if (role != null && role.getName().equals(Mayor.NAME)) {
+			enabled = true;
+		}
+		// :TODO: Need to add method to get number of colonist on the colonist ship
+		colonistShip.setText("Coloinist " + GameHelper.getNumberOfPlayers());
+		colonistShip.setEnabled(enabled);
+		colonistShipPanel.setEnabled(enabled);
+	}
+
+	/* ********************************************************************************************** */
+	private void updateCargoShips() {
+		Role role = GameHelper.getCurrentRole();
+		boolean enabled = false;
+		if (role != null && role.getName().equals(Captain.NAME)) {
+			enabled = true;
+		}
+		// :TODO: Need to add method to get cargo for each cargo ship
+		String cargoShipsLabel = "\u25A1 \u25A1 \u25A1 \u25A1 \u25A1";
+		for (int i=0; i < 3; i++) {
+			cargoShipsLabel += " \u25A1";
+			cargoShips[i].setText(cargoShipsLabel);
+			cargoShips[i].setEnabled(enabled);
+		}
+		cargoShipsPanel.setEnabled(enabled);
+	}
+
+	/* ********************************************************************************************** */
+	private void updateTradingHouse() {
+		Role role = GameHelper.getCurrentRole();
+		boolean enabled = false;
+		if (role != null && role.getName().equals(Trader.NAME)) {
+			enabled = true;
+		}
+		// :TODO: Need to add method to get list of goods in the trader house
+		// String tradingHouseLabel = "\u25A1 \u25A1 \u25A1 \u25A1       ";
+		// String text = "<font color=#FFCC00>Corn=0</font> " + 
+		//               "<font color='blue'>Indigo=1 </font>" +
+		//               "<font color=#B2B28F>Sugar=2 </font>" +
+		//               "<font color=#5C1F00>Tobacco=3 </font>" +
+		//               "<font color='black'>Indigo=4 </font>";
+		// tradingHouse.setText("<html>" + tradingHouseLabel + text + "</html>");
+		String tradingHouseLabel = "\u25A1 \u25A1 \u25A1 \u25A1       Corn=0 Indigo=1 Sugar=2 Tobacco=3 Coffee=4";
+		tradingHouse.setText(tradingHouseLabel);
+		tradingHouse.setEnabled(enabled);
+		tradingHousePanel.setEnabled(enabled);
 	}
 
 	/* ********************************************************************************************** */
@@ -415,6 +478,7 @@ public class DesktopLauncher implements ActionListener {
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
+		// Put Supplies and Goods in a Subpanel
 		JPanel subPanel = new JPanel();
 		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.X_AXIS));
 
@@ -504,6 +568,53 @@ public class DesktopLauncher implements ActionListener {
 			idx++;
 		}
 		mainPanel.add(buildingsPanel);
+
+		// Put Cargo Ships and the Trading House in a Subpanel
+		subPanel = new JPanel();
+		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.X_AXIS));
+
+		// Colonist Ship
+		TitledBorder colonistShipBorder = BorderFactory.createTitledBorder("Colonist Ship:");
+		colonistShipBorder.setTitleJustification(TitledBorder.LEFT);
+		colonistShipBorder.setTitlePosition(TitledBorder.DEFAULT_POSITION);
+
+		// Colonist Ship grid is 1 row
+		colonistShipPanel = new JPanel(new GridLayout(1, 0), false);
+		colonistShipPanel.setBorder(colonistShipBorder);
+		// Display Colonist Ship elements
+		colonistShip = createLabel(colonistShipPanel, "Coloinist ");
+		subPanel.add(colonistShipPanel);
+
+		// Cargo Ships
+		TitledBorder cargoShipsBorder = BorderFactory.createTitledBorder("Cargo Ships:");
+		cargoShipsBorder.setTitleJustification(TitledBorder.LEFT);
+		cargoShipsBorder.setTitlePosition(TitledBorder.DEFAULT_POSITION);
+
+		// Cargo Ships grid is 1 row
+		cargoShipsPanel = new JPanel(new GridLayout(1, 0), false);
+		cargoShipsPanel.setBorder(cargoShipsBorder);
+		// Display Cargo Ship elements
+		String cargoShipsLabel = "\u25A1 \u25A1 \u25A1 \u25A1 \u25A1";
+		for (int i=0; i < 3; i++) {
+			cargoShipsLabel += " \u25A1";
+			cargoShips[i] = createButton(cargoShipsPanel, cargoShipsLabel, "chooseCargoShip " + i);
+		}
+		subPanel.add(cargoShipsPanel);
+
+		// Trading House
+		TitledBorder tradingHouseBorder = BorderFactory.createTitledBorder("Trading House:");
+		tradingHouseBorder.setTitleJustification(TitledBorder.LEFT);
+		tradingHouseBorder.setTitlePosition(TitledBorder.DEFAULT_POSITION);
+
+		// Trading House grid is 1 row
+		tradingHousePanel = new JPanel(new GridLayout(1, 0), false);
+		tradingHousePanel.setBorder(tradingHouseBorder);
+		// Display Trading House elements
+		String tradingHouseLabel = "\u25A1 \u25A1 \u25A1 \u25A1       Corn=0 Indigo=1 Sugar=2 Tobacco=3 Coffee=4";
+		tradingHouse = createLabel(tradingHousePanel, tradingHouseLabel);
+		subPanel.add(tradingHousePanel);
+
+		mainPanel.add(subPanel);
 
 		// Players
 		tabbedPlayerPane = new JTabbedPane();
