@@ -15,7 +15,7 @@ public class Game {
 	private Bank bank;
 	private List<Player> players;
 	private boolean isLastRound;
-	
+
 	public Game(List<Player> players) {
 		numberOfPlayers = players.size();
 		GameHelper.setGame(this);
@@ -23,7 +23,7 @@ public class Game {
 		bank = new Bank();
 		StartGame();
 	}
-	
+
 	private void StartGame() {
 		Collections.shuffle(players, new Random(GameHelper.RAND_SEED));
 
@@ -46,18 +46,18 @@ public class Game {
 			} else {
 				player.addCrop(Corn.NAME);
 			}
-			player.addCoins(numberOfPlayers-1);
+			player.addCoins(numberOfPlayers - 1);
 		}
 	}
-	
+
 	public Bank getBank() {
 		return bank;
 	}
-	
+
 	public List<Player> getPlayers() {
 		return players;
 	}
-	
+
 	public int getNumberOfPlayers() {
 		return numberOfPlayers;
 	}
@@ -65,15 +65,15 @@ public class Game {
 	public void setLastRound() {
 		isLastRound = true;
 	}
-	
+
 	public boolean isLastRound() {
 		return isLastRound;
 	}
-	
+
 	public void endGame() {
-		
+
 	}
-	
+
 	public void nextRound() {
 		Player govenor = getCurrentPlayerForRound();
 		Player nextPlayer = GameHelper.getNextPlayer(govenor);
@@ -91,7 +91,7 @@ public class Game {
 			nextPlayer.setAction(true);
 		}
 	}
-	
+
 	public void nextTurn() {
 		Player turnPlayer = getCurrentPlayerForTurn();
 		Player nextPlayer = GameHelper.getNextPlayer(turnPlayer);
@@ -101,21 +101,17 @@ public class Game {
 		} else {
 			nextPlayer.setTurn(true);
 			nextPlayer.setAction(true);
-			//TODO Have user select their role
+			// TODO Have user select their role
 		}
 	}
-	
+
 	public void nextAction() {
 		Player actionPlayer = getCurrentPlayerForAction();
 		Player nextPlayer = GameHelper.getNextPlayer(actionPlayer);
 		actionPlayer.setAction(false);
-		if (isEndOfTurn()) {
-			nextTurn();
-		} else {
-			nextPlayer.setAction(true);
-		}
+		nextPlayer.setAction(true);
 	}
-	
+
 	public Player getCurrentPlayerForRound() {
 		for (Player player : players) {
 			if (player.isGovernor()) {
@@ -124,17 +120,17 @@ public class Game {
 		}
 		return null;
 	}
-	
+
 	public boolean isEndOfRound() {
 		Player turnPlayer = getCurrentPlayerForTurn();
 		return GameHelper.getNextPlayer(turnPlayer).equals(getCurrentPlayerForRound());
 	}
-	
+
 	public boolean isEndOfTurn() {
 		Player actionPlayer = getCurrentPlayerForAction();
 		return GameHelper.getNextPlayer(actionPlayer).equals(getCurrentPlayerForTurn());
 	}
-	
+
 	public Player getCurrentPlayerForTurn() {
 		for (Player player : players) {
 			if (player.isTurn()) {
@@ -143,7 +139,7 @@ public class Game {
 		}
 		return null;
 	}
-	
+
 	public Player getCurrentPlayerForAction() {
 		for (Player player : players) {
 			if (player.isAction()) {
@@ -152,7 +148,7 @@ public class Game {
 		}
 		return null;
 	}
-	
+
 	public Role getCurrentRole() {
 		return getCurrentPlayerForTurn().getRole();
 	}

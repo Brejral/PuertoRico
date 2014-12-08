@@ -8,7 +8,7 @@ import com.brejral.puertorico.game.crop.Crop;
 import com.brejral.puertorico.game.player.Player;
 
 public class Craftsman extends Role {
-	public static final String NAME = "Trader";
+	public static final String NAME = "Craftsman";
 
 	public Craftsman() {
 		super(NAME);

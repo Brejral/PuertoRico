@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 import com.brejral.puertorico.game.GameHelper;
+import com.brejral.puertorico.game.building.Building;
 import com.brejral.puertorico.game.building.CityHall;
 import com.brejral.puertorico.game.building.CoffeeRoaster;
 import com.brejral.puertorico.game.building.ConstructionHut;
@@ -48,15 +49,16 @@ import com.brejral.puertorico.game.role.Trader;
 import com.brejral.puertorico.game.ship.Ship;
 
 public class Bank {
-	private int settlerSupply, coinSupply, pointSupply;
+	private int settlerSupply, coinSupply, pointSupply, numberOfRoles;
 	private List<Crop> cropSupply, settlerCropSupply;
 	private List<Quarry> quarrySupply;
 	private Ship settlerShip;
 	private List<Ship> cargoShips;
 	private List<Role> roles;
 	private HashMap<String, Integer> goodSupply;
-	private HashMap<String, Integer> buildingSupply;
-	
+	private List<Building> buildingSupply;
+	private HashMap<String, Integer> buildingSupplyCount;
+
 	public Bank() {
 		initializeCropSupply();
 		initializeSettlerCropSupply();
@@ -66,7 +68,7 @@ public class Bank {
 		initializeCargoShips();
 		initializeBuildingSupply();
 		settlerShip = new Ship();
-		switch(GameHelper.getNumberOfPlayers()) {
+		switch (GameHelper.getNumberOfPlayers()) {
 		case 3:
 			settlerShip.setSettlers(3);
 			setCoinSupply(48);
@@ -119,7 +121,7 @@ public class Bank {
 		}
 		Collections.shuffle(cropSupply, new Random(GameHelper.RAND_SEED));
 	}
-	
+
 	private void initializeGoodSupply() {
 		goodSupply = new HashMap<String, Integer>();
 		goodSupply.put("Corn", 10);
@@ -128,7 +130,7 @@ public class Bank {
 		goodSupply.put("Sugar", 11);
 		goodSupply.put("Tobacco", 9);
 	}
-	
+
 	private void initializeRoles() {
 		roles = new ArrayList<Role>();
 		roles.add(new Builder());
@@ -143,40 +145,56 @@ public class Bank {
 		} else if (GameHelper.getNumberOfPlayers() == 4) {
 			roles.add(new Prospector());
 		}
+		numberOfRoles = roles.size();
 	}
-	
+
 	private void initializeCargoShips() {
 		cargoShips = new ArrayList<Ship>();
 		cargoShips.add(new Ship(GameHelper.getNumberOfPlayers() + 1));
 		cargoShips.add(new Ship(GameHelper.getNumberOfPlayers() + 2));
 		cargoShips.add(new Ship(GameHelper.getNumberOfPlayers() + 3));
 	}
-	
+
 	private void initializeBuildingSupply() {
-		buildingSupply = new HashMap<String, Integer>();
-		buildingSupply.put(SmallIndigoPlant.NAME, 4);
-		buildingSupply.put(SmallSugarMill.NAME, 4);
-		buildingSupply.put(IndigoPlant.NAME, 3);
-		buildingSupply.put(SugarMill.NAME, 3);
-		buildingSupply.put(TobaccoStorage.NAME, 3);
-		buildingSupply.put(CoffeeRoaster.NAME, 3);
-		buildingSupply.put(SmallMarket.NAME, 2);
-		buildingSupply.put(Hacienda.NAME, 2);
-		buildingSupply.put(ConstructionHut.NAME, 2);
-		buildingSupply.put(SmallWarehouse.NAME, 2);
-		buildingSupply.put(Hospice.NAME, 2);
-		buildingSupply.put(Office.NAME, 2);
-		buildingSupply.put(LargeMarket.NAME, 2);
-		buildingSupply.put(LargeWarehouse.NAME, 2);
-		buildingSupply.put(Factory.NAME, 2);
-		buildingSupply.put(University.NAME, 2);
-		buildingSupply.put(Harbor.NAME, 2);
-		buildingSupply.put(Wharf.NAME, 2);
-		buildingSupply.put(GuildHall.NAME, 1);
-		buildingSupply.put(Residence.NAME, 1);
-		buildingSupply.put(CustomsHouse.NAME, 1);
-		buildingSupply.put(CityHall.NAME, 1);
-		buildingSupply.put(Fortress.NAME, 1);
+		buildingSupply = new ArrayList<Building>();
+		for (int i = 0; i < 4; i++) {
+			buildingSupply.add(new SmallIndigoPlant());
+			buildingSupply.add(new SmallSugarMill());
+		}
+		for (int i = 0; i < 3; i++) {
+			buildingSupply.add(new IndigoPlant());
+			buildingSupply.add(new SugarMill());
+			buildingSupply.add(new TobaccoStorage());
+			buildingSupply.add(new CoffeeRoaster());
+		}
+		for (int i = 0; i < 2; i++) {
+			buildingSupply.add(new SmallMarket());
+			buildingSupply.add(new Hacienda());
+			buildingSupply.add(new ConstructionHut());
+			buildingSupply.add(new SmallWarehouse());
+			buildingSupply.add(new Hospice());
+			buildingSupply.add(new Office());
+			buildingSupply.add(new LargeMarket());
+			buildingSupply.add(new LargeWarehouse());
+			buildingSupply.add(new Factory());
+			buildingSupply.add(new University());
+			buildingSupply.add(new Harbor());
+			buildingSupply.add(new Wharf());
+		}
+		buildingSupply.add(new GuildHall());
+		buildingSupply.add(new Residence());
+		buildingSupply.add(new CustomsHouse());
+		buildingSupply.add(new CityHall());
+		buildingSupply.add(new Fortress());
+
+		buildingSupplyCount = new HashMap<String, Integer>();
+		for (Building building : buildingSupply) {
+			if (buildingSupplyCount.containsKey(building.getName())) {
+				buildingSupplyCount.put(building.getName(), buildingSupplyCount.get(building.getName()) + 1);
+			} else {
+				buildingSupplyCount.put(building.getName(), 1);
+			}
+		}
 	}
 
 	public int getSettlerSupply() {
@@ -194,16 +212,16 @@ public class Bank {
 	private void setCoinSupply(int coinSupply) {
 		this.coinSupply = coinSupply;
 	}
-	
+
 	public void removeCoinSupply(int value) {
 		this.coinSupply -= value;
 	}
-	
-	public void addCoinSupply(int value) {
+
+	public void addCoinToSupply(int value) {
 		this.coinSupply += value;
 	}
-	
-	public void subtractCoinSupply(int value) {
+
+	public void subtractCoinFromSupply(int value) {
 		this.coinSupply -= value;
 	}
 
@@ -218,27 +236,27 @@ public class Bank {
 	public HashMap<String, Integer> getGoodSupply() {
 		return goodSupply;
 	}
-	
+
 	public int getGoodSupply(String cropName) {
 		return goodSupply.get(cropName);
 	}
-	
+
 	private void setGoodSupply(String cropName, int value) {
 		goodSupply.put(cropName, value);
 	}
-	
-	public void addGoodSupply(String cropName, int value) {
+
+	public void addGoodToSupply(String cropName, int value) {
 		setGoodSupply(cropName, getGoodSupply(cropName) + value);
 	}
-	
-	public void subtractGoodSupply(String cropName, int value) {
+
+	public void subtractGoodFromSupply(String cropName, int value) {
 		setGoodSupply(cropName, getGoodSupply(cropName) - value);
 	}
-	
+
 	public List<Crop> getCropSupply() {
 		return cropSupply;
 	}
-	
+
 	public List<Quarry> getQuarrySupply() {
 		return quarrySupply;
 	}
@@ -250,7 +268,7 @@ public class Bank {
 			}
 		}
 	}
-	
+
 	public List<Crop> getSettlerCropSupply() {
 		return settlerCropSupply;
 	}
@@ -276,13 +294,26 @@ public class Bank {
 	public Ship getSettlerShip() {
 		return settlerShip;
 	}
-	
+
 	public List<Role> getRoles() {
 		return roles;
 	}
 
+	public Role getRole(String roleName) {
+		for (Role role : roles) {
+			if (role.getName().equals(roleName)) {
+				return role;
+			}
+		}
+		return null;
+	}
+
 	public void addRole(Role role) {
 		this.roles.add(role);
+	}
+
+	public void removeRole(Role role) {
+		roles.remove(role);
 	}
 
 	public void addBonusCoinsToRoles() {
@@ -291,7 +322,30 @@ public class Bank {
 		}
 	}
 
-	public HashMap<String, Integer> getBuildingSupply() {
+	public List<Building> getBuildingSupply() {
 		return buildingSupply;
+	}
+
+	public Building removeBuildingFromSupply(String buildingName) {
+		for (int i = 0; i < buildingSupply.size(); i++) {
+			Building building = buildingSupply.get(i);
+			if (building.getName().equals(buildingName)) {
+				subtractBuildingSupplyCount(buildingName);
+				return buildingSupply.remove(i);
+			}
+		}
+		return null;
+	}
+
+	public void subtractBuildingSupplyCount(String buildingName) {
+		buildingSupplyCount.put(buildingName, buildingSupplyCount.get(buildingName) - 1);
+	}
+
+	public int getBuildingSupplyCount(String buildingName) {
+		return buildingSupplyCount.get(buildingName);
+	}
+
+	public int getNumberOfRoles() {
+		return numberOfRoles;
 	}
 }

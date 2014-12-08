@@ -18,6 +18,10 @@ public class Role {
 		bonusCoins++;
 	}
 	
+	public int getBonusCoins() {
+		return bonusCoins;
+	}
+	
 	public void onRoleStart() {
 		GameHelper.getCurrentPlayerForTurn().addCoins(bonusCoins);
 		bonusCoins = 0;
@@ -28,7 +32,7 @@ public class Role {
 	}
 	
 	public void onRoleEnd() {
-		
+		GameHelper.nextTurn();
 	}
 
 }

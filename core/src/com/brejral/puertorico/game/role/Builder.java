@@ -2,10 +2,10 @@ package com.brejral.puertorico.game.role;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
 import com.brejral.puertorico.game.GameHelper;
 import com.brejral.puertorico.game.building.Building;
+import com.brejral.puertorico.game.building.University;
 import com.brejral.puertorico.game.player.Player;
 
 public class Builder extends Role {
@@ -19,7 +19,13 @@ public class Builder extends Role {
 		super.onRoleStart();
 	}
 	
-	public void onAction(Building building) {
+	public void onAction(String buildingName, int index) {
+		Player player = GameHelper.getCurrentPlayerForAction();
+		Building building = GameHelper.removeBuildingFromSupply(buildingName);
+		if (player.hasActiveBuilding(University.NAME)) {
+			building.setSettlers(1);
+		}
+		player.addBuilding(index, building);
 		super.onAction();
 	}
 	
@@ -30,9 +36,9 @@ public class Builder extends Role {
 	public List<String> buildingsPlayerCanBuild() {
 		Player player = GameHelper.getCurrentPlayerForAction();
 		List<String> buildingNames = new ArrayList<String>();
-		for (Entry<String, Integer> entry : GameHelper.getBuildingSupply().entrySet()) {
-			if (entry.getValue() > 0 && player.canAffordBuilding(entry.getKey())) {
-				buildingNames.add(entry.getKey());
+		for (String buildingName : Building.BUILDING_LIST) {
+			if (GameHelper.getBuildingSupplyCount(buildingName) > 0 && player.canAffordBuilding(buildingName) && (GameHelper.getBuildingFromSupply(buildingName).getSize() != 2 || player.canBuildLargeBuilding())) {
+				buildingNames.add(buildingName);
 			}
 		}
 		return buildingNames;

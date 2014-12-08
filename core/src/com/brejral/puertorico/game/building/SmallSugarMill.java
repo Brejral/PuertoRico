@@ -3,7 +3,7 @@ package com.brejral.puertorico.game.building;
 import com.brejral.puertorico.game.crop.Sugar;
 
 public class SmallSugarMill extends Building {
-	public static final String NAME = "Small Sugar Plant";
+	public static final String NAME = "Small Sugar Mill";
 
 	public SmallSugarMill() {
 		super(NAME);

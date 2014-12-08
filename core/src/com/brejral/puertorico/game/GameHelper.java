@@ -1,11 +1,11 @@
 package com.brejral.puertorico.game;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
 import com.brejral.puertorico.game.bank.Bank;
+import com.brejral.puertorico.game.building.Building;
 import com.brejral.puertorico.game.crop.Coffee;
 import com.brejral.puertorico.game.crop.Corn;
 import com.brejral.puertorico.game.crop.Crop;
@@ -32,6 +32,10 @@ public class GameHelper {
 	public static int getNumberOfPlayers() {
 		return getGame().getNumberOfPlayers();
 	}
+	
+	public static int getGoodSupply(String cropName) {
+		return getBank().getGoodSupply().get(cropName);
+	}
 
 	public static Crop getCropFromBank(String cropName) {
 		List<Crop> crops = getBank().getCropSupply();
@@ -52,12 +56,12 @@ public class GameHelper {
 	}
 
 	public static void addCoinsToPlayerFromSupply(Player player, int value) {
-		getBank().subtractCoinSupply(value);
+		getBank().subtractCoinFromSupply(value);
 		player.addCoins(value);
 	}
 
 	public static void addCoinsToSupplyFromPlayer(Player player, int value) {
-		getBank().addCoinSupply(value);
+		getBank().addCoinToSupply(value);
 		player.subtractCoins(value);
 	}
 
@@ -65,7 +69,7 @@ public class GameHelper {
 		int supplyGoods = getBank().getGoodSupply().get(cropName);
 		boolean useSupplyGoods = supplyGoods < value;
 		player.addGood(cropName, useSupplyGoods ? supplyGoods : value);
-		getBank().subtractGoodSupply(cropName, useSupplyGoods ? supplyGoods : value);
+		getBank().subtractGoodFromSupply(cropName, useSupplyGoods ? supplyGoods : value);
 		return useSupplyGoods ? supplyGoods : value;
 	}
 
@@ -76,17 +80,64 @@ public class GameHelper {
 	public static Bank getBank() {
 		return getGame().getBank();
 	}
+	
+	public static int getCoinSupply() {
+		return getBank().getCoinSupply();
+	}
+	
+	public static int getPointSupply() {
+		return getBank().getPointSupply();
+	}
+	
+	public static int getSettlerSupply() {
+		return getBank().getSettlerSupply();
+	}
+	
+	public static List<Quarry> getQuarrySupply() {
+		return getBank().getQuarrySupply();
+	}
+	
+	public static List<Role> getRoles() {
+		return getBank().getRoles();
+	}
+	
+	public static int getNumberOfRoles() {
+		return getBank().getNumberOfRoles();
+	}
 
 	public static Ship getSettlerShip() {
 		return getBank().getSettlerShip();
 	}
 	
-	public static HashMap<String, Integer> getBuildingSupply() {
+	public static List<Building> getBuildingSupply() {
 		return getBank().getBuildingSupply();
+	}
+	
+	public static Building getBuildingFromSupply(String buildingName) {
+		for (Building building : getBuildingSupply()) {
+			if (building.getName().equals(buildingName)) {
+				return building;
+			}
+		}
+		return null;
+	}
+	
+	public static int getBuildingSupplyCount(String buildingName) {
+		return getBank().getBuildingSupplyCount(buildingName);
+	}
+	
+	public static Building removeBuildingFromSupply(String buildingName) {
+		return getBank().removeBuildingFromSupply(buildingName);
 	}
 	
 	public static void setSettlerCropSupply() {
 		getBank().setSettlerCropSupply();
+	}
+	
+	public static void selectRoleForPlayer(String roleName) {
+		Role role = getBank().getRole(roleName);
+		getBank().removeRole(role);
+		getCurrentPlayerForTurn().setRole(role);
 	}
 
 	public static void resupplySettlerShip(int openSlots) {
@@ -94,11 +145,11 @@ public class GameHelper {
 	}
 
 	public static void addGoodSupply(String cropName, int value) {
-		getBank().addGoodSupply(cropName, value);
+		getBank().addGoodToSupply(cropName, value);
 	}
 
 	public static void subtractGoodSupply(String cropName, int value) {
-		getBank().subtractGoodSupply(cropName, value);
+		getBank().subtractGoodFromSupply(cropName, value);
 	}
 
 	public static int getCropPrice(String cropName) {
@@ -189,5 +240,9 @@ public class GameHelper {
 		getSettlerCropSupply().remove(crop);
 		crop.setIsSettled(isSettled);
 		player.addCrop(crop);
+	}
+	
+	public static boolean hasRoleBeenSelected() {
+		return getCurrentPlayerForTurn().getRole() != null;
 	}
 }

@@ -29,34 +29,41 @@ public class Player {
 	private int points = 0, coins = 0, settlers = 0;
 	private boolean isGovernor = false, isTurn = false, isAction = false;
 	private List<Crop> crops = new ArrayList<Crop>(12);
-	private List<Building> buildings = new ArrayList<Building>(); //ArrayList of buildings counted top to bottom then left to right
+	private List<Building> buildings = new ArrayList<Building>(12); // top to bottom, left to right
 	private HashMap<String, Integer> goods = new HashMap<String, Integer>();
-	
+
 	public Player() {
-		
+		this("");
 	}
-	
+
 	public Player(String name) {
 		this.name = name;
+		initializeLists();
 	}
-	
+
 	public Player(User usr) {
 		user = usr;
 	}
-	
+
 	public User getUser() {
 		return user;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public void resetPlayer() {
 		points = 0;
 		coins = 0;
 	}
-	
+
+	public void initializeLists() {
+		for (int i = 0; i < 12; i++) {
+			buildings.add(null);
+		}
+	}
+
 	public int getCoins() {
 		return coins;
 	}
@@ -64,7 +71,7 @@ public class Player {
 	public void addCoins(int value) {
 		coins += value;
 	}
-	
+
 	public void subtractCoins(int value) {
 		coins -= value;
 	}
@@ -84,7 +91,7 @@ public class Player {
 	public void setGovenor(boolean isGovernor) {
 		this.isGovernor = isGovernor;
 	}
-	
+
 	public boolean isTurn() {
 		return isTurn;
 	}
@@ -92,19 +99,19 @@ public class Player {
 	public void setTurn(boolean isTurn) {
 		this.isTurn = isTurn;
 	}
-	
+
 	public boolean isAction() {
 		return isAction;
 	}
-	
+
 	public void setAction(boolean isAction) {
 		this.isAction = isAction;
 	}
-	
+
 	public List<Crop> getCrops() {
 		return crops;
 	}
-	
+
 	public List<Crop> getCrops(String cropName) {
 		List<Crop> foundCrops = new ArrayList<Crop>();
 		for (Crop crop : crops) {
@@ -114,7 +121,7 @@ public class Player {
 		}
 		return foundCrops;
 	}
-	
+
 	public int getNumberOfSettledCrops(String cropName) {
 		int settledCrops = 0;
 		for (Crop crop : getCrops(cropName)) {
@@ -124,33 +131,33 @@ public class Player {
 		}
 		return settledCrops;
 	}
-	
+
 	public void addCrop(String cropName) {
 		Crop crop = GameHelper.getCropFromBank(cropName);
 		crops.add(crop);
 	}
-	
+
 	public void addCrop(Crop crop) {
 		crops.add(crop);
 	}
-	
+
 	public void addQuarry() {
 		Quarry quarry = GameHelper.getQuarryFromBank();
 		crops.add(quarry);
 	}
-	
+
 	public void setRole(Role role) {
 		this.role = role;
 	}
-	
+
 	public Role getRole() {
 		return role;
 	}
-	
+
 	public void clearRole() {
 		setRole(null);
 	}
-	
+
 	public int getNumberProductionSettlersForCrop(String cropName) {
 		List<String> buildingNames = new ArrayList<String>();
 		switch (cropName) {
@@ -173,7 +180,7 @@ public class Player {
 		}
 		return getSettlersForBuildings(buildingNames);
 	}
-	
+
 	public boolean hasActiveBuilding(String buildingName) {
 		for (Building building : getBuildings(buildingName)) {
 			if (building.isActive()) {
@@ -182,7 +189,7 @@ public class Player {
 		}
 		return false;
 	}
-	
+
 	public int getSettlersForBuildings(List<String> buildingNames) {
 		int settlers = 0;
 		for (Building building : getBuildings(buildingNames)) {
@@ -190,13 +197,13 @@ public class Player {
 		}
 		return settlers;
 	}
-	
+
 	public int getNumberActiveBuildings(String buildingName) {
 		List<String> buildingNames = new ArrayList<String>();
 		buildingNames.add(buildingName);
 		return getNumberActiveBuildings(buildingNames);
 	}
-	
+
 	public int getNumberActiveBuildings(List<String> buildingNames) {
 		int activeBuildings = 0;
 		for (Building building : getBuildings(buildingNames)) {
@@ -206,7 +213,7 @@ public class Player {
 		}
 		return activeBuildings;
 	}
-	
+
 	public List<Building> getBuildings(List<String> buildingNames) {
 		List<Building> foundBuildings = new ArrayList<Building>();
 		for (Building building : buildings) {
@@ -216,7 +223,7 @@ public class Player {
 		}
 		return foundBuildings;
 	}
-	
+
 	public List<Building> getBuildings(String buildingName) {
 		List<String> buildingNames = new ArrayList<String>();
 		buildingNames.add(buildingName);
@@ -227,10 +234,16 @@ public class Player {
 		return buildings;
 	}
 	
+	public void addBuilding(int index, Building building) {
+		buildings.set(index, building);
+	}
+
 	public int getOpenBuildingSlots() {
 		int openSlots = 0;
 		for (Building building : getBuildings()) {
+			if (building != null) {
 			openSlots += building.getOpenSlots();
+			}
 		}
 		return openSlots;
 	}
@@ -252,23 +265,23 @@ public class Player {
 	public HashMap<String, Integer> getCropSupply() {
 		return goods;
 	}
-	
+
 	public void setGood(String cropName, int value) {
 		goods.put(cropName, value);
 	}
-	
+
 	public void addGood(String cropName, int value) {
 		setGood(cropName, goods.get(cropName) + value);
 	}
-	
+
 	public void subtractGood(String cropName, int value) {
 		setGood(cropName, goods.get(cropName) - value);
 	}
-	
+
 	public int getNumberOfGoods(String cropName) {
 		return goods.get(cropName);
 	}
-	
+
 	public int getTotalPoints() {
 		int totalPoints = points;
 		for (Building building : buildings) {
@@ -287,18 +300,27 @@ public class Player {
 	public void addSettlers(int value) {
 		this.settlers += value;
 	}
-	
+
 	public boolean didSelectRole() {
 		return isAction && isTurn;
 	}
-	
+
 	public int getPriceOfBuildingForPlayer(String buildingName) {
-		int price = Building.getPrice(buildingName);
-		int discount = Math.min(getNumberOfSettledCrops(Quarry.NAME), Building.getPoints(buildingName)) + (isTurn ? 1 : 0);
+		int price = GameHelper.getBuildingFromSupply(buildingName).getPrice();
+		int discount = Math.min(getNumberOfSettledCrops(Quarry.NAME), GameHelper.getBuildingFromSupply(buildingName).getPoints()) + (isTurn ? 1 : 0);
 		return price - discount;
 	}
-	
+
 	public boolean canAffordBuilding(String buildingName) {
 		return getPriceOfBuildingForPlayer(buildingName) <= coins;
+	}
+
+	public boolean isBuildingSlotEmpty(int index) {
+		return buildings.get(index) == null;
+	}
+
+	public boolean canBuildLargeBuilding() {
+		return (isBuildingSlotEmpty(1) && (isBuildingSlotEmpty(0) || isBuildingSlotEmpty(2))) || (isBuildingSlotEmpty(4) && (isBuildingSlotEmpty(3) || isBuildingSlotEmpty(5)))
+					|| (isBuildingSlotEmpty(7) && (isBuildingSlotEmpty(6) || isBuildingSlotEmpty(8))) || (isBuildingSlotEmpty(10) && (isBuildingSlotEmpty(9) || isBuildingSlotEmpty(11)));
 	}
 }
