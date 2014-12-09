@@ -217,7 +217,7 @@ public class Player {
 	public List<Building> getBuildings(List<String> buildingNames) {
 		List<Building> foundBuildings = new ArrayList<Building>();
 		for (Building building : buildings) {
-			if (buildingNames.contains(building.getName())) {
+			if (building != null && buildingNames.contains(building.getName())) {
 				foundBuildings.add(building);
 			}
 		}
@@ -306,8 +306,12 @@ public class Player {
 	}
 
 	public int getPriceOfBuildingForPlayer(String buildingName) {
-		int price = GameHelper.getBuildingFromSupply(buildingName).getPrice();
-		int discount = Math.min(getNumberOfSettledCrops(Quarry.NAME), GameHelper.getBuildingFromSupply(buildingName).getPoints()) + (isTurn ? 1 : 0);
+		return getPriceOfBuildingForPlayer(GameHelper.getBuildingFromSupply(buildingName));
+	}
+	
+	public int getPriceOfBuildingForPlayer(Building building) {
+		int price = building.getPrice();
+		int discount = Math.min(getNumberOfSettledCrops(Quarry.NAME), building.getPoints()) + (isTurn ? 1 : 0);
 		return price - discount;
 	}
 

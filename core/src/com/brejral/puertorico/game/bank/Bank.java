@@ -49,12 +49,13 @@ import com.brejral.puertorico.game.role.Trader;
 import com.brejral.puertorico.game.ship.Ship;
 
 public class Bank {
-	private int settlerSupply, coinSupply, pointSupply, numberOfRoles;
+	private int settlerSupply, coinSupply, pointSupply;
 	private List<Crop> cropSupply, settlerCropSupply;
 	private List<Quarry> quarrySupply;
 	private Ship settlerShip;
 	private List<Ship> cargoShips;
 	private List<Role> roles;
+	private List<String> roleNames;
 	private HashMap<String, Integer> goodSupply;
 	private List<Building> buildingSupply;
 	private HashMap<String, Integer> buildingSupplyCount;
@@ -145,7 +146,11 @@ public class Bank {
 		} else if (GameHelper.getNumberOfPlayers() == 4) {
 			roles.add(new Prospector());
 		}
-		numberOfRoles = roles.size();
+		
+		roleNames = new ArrayList<String>();
+		for (Role role : roles) {
+			roleNames.add(role.getName());
+		}
 	}
 
 	private void initializeCargoShips() {
@@ -294,6 +299,10 @@ public class Bank {
 	public Ship getSettlerShip() {
 		return settlerShip;
 	}
+	
+	public List<String> getRoleNames() {
+		return roleNames;
+	}
 
 	public List<Role> getRoles() {
 		return roles;
@@ -346,6 +355,10 @@ public class Bank {
 	}
 
 	public int getNumberOfRoles() {
-		return numberOfRoles;
+		return roleNames.size();
+	}
+	
+	public boolean isRoleAvailable(String roleName) {
+		return getRole(roleName) != null;
 	}
 }

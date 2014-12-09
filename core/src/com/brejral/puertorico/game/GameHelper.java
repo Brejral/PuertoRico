@@ -97,8 +97,20 @@ public class GameHelper {
 		return getBank().getQuarrySupply();
 	}
 	
+	public static List<String> getRoleNames() {
+		return getBank().getRoleNames();
+	}
+	
 	public static List<Role> getRoles() {
 		return getBank().getRoles();
+	}
+	
+	public static Role getRole(String roleName) {
+		return getBank().getRole(roleName);
+	}
+	
+	public static boolean isRoleAvailable(String roleName) {
+		return getBank().isRoleAvailable(roleName);
 	}
 	
 	public static int getNumberOfRoles() {
@@ -107,6 +119,10 @@ public class GameHelper {
 
 	public static Ship getSettlerShip() {
 		return getBank().getSettlerShip();
+	}
+	
+	public static List<Ship> getCargoShips() {
+		return getBank().getCargoShips();
 	}
 	
 	public static List<Building> getBuildingSupply() {
@@ -144,7 +160,7 @@ public class GameHelper {
 		getBank().resupplySettlerShip(openSlots);
 	}
 
-	public static void addGoodSupply(String cropName, int value) {
+	public static void addGoodsToSupply(String cropName, int value) {
 		getBank().addGoodToSupply(cropName, value);
 	}
 
@@ -223,6 +239,11 @@ public class GameHelper {
 	
 	public static Role getCurrentRole() {
 		return getCurrentPlayerForTurn().getRole();
+	}
+	
+	public static boolean isRole(String roleName) {
+		Role role = getCurrentRole();
+		return role != null ? role.getName().equals(roleName) : false;
 	}
 	
 	public static List<String> getGoodsPlayerCanSelectForCraftsmanBonus() {

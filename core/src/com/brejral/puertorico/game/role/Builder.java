@@ -10,6 +10,7 @@ import com.brejral.puertorico.game.player.Player;
 
 public class Builder extends Role {
 	public static final String NAME = "Builder";
+	private String selectedBuilding;
 	
 	public Builder() {
 		super(NAME);
@@ -19,14 +20,28 @@ public class Builder extends Role {
 		super.onRoleStart();
 	}
 	
-	public void onAction(String buildingName, int index) {
+	public boolean hasSelectedBuilding() {
+		return selectedBuilding != null;
+	}
+	
+	public void onBuildingSelect(String buildingName) {
+		selectedBuilding = buildingName;
+	}
+	
+	public void onLocationSelect(int index) {
 		Player player = GameHelper.getCurrentPlayerForAction();
-		Building building = GameHelper.removeBuildingFromSupply(buildingName);
+		Building building = GameHelper.removeBuildingFromSupply(selectedBuilding);
 		if (player.hasActiveBuilding(University.NAME)) {
 			building.setSettlers(1);
 		}
 		player.addBuilding(index, building);
-		super.onAction();
+		GameHelper.addCoinsToSupplyFromPlayer(player, player.getPriceOfBuildingForPlayer(building));
+		selectedBuilding = null;
+		if (GameHelper.getNextPlayer(player).equals(GameHelper.getCurrentPlayerForTurn())) {
+			super.onRoleEnd();
+		} else {
+			super.onAction();
+		}
 	}
 	
 	public void onRoleEnd() {
@@ -42,5 +57,19 @@ public class Builder extends Role {
 			}
 		}
 		return buildingNames;
+	}
+	
+	public boolean canPlayerBuildInLocation(int index) {
+		if (!hasSelectedBuilding()) {
+			return false;
+		}
+		Player player = GameHelper.getCurrentPlayerForAction();
+		if (GameHelper.getBuildingFromSupply(selectedBuilding).getSize() == 1) {
+			return player.getBuildings().get(index) == null; 
+		}
+		if (index == 2 || index == 5 || index == 8 || index == 11) {
+			return false; // Cannot build size 2 building on bottom row
+		}
+		return player.getBuildings().get(index) == null && player.getBuildings().get(index + 1) == null;
 	}
 }

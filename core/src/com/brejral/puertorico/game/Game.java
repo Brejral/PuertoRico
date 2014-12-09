@@ -95,14 +95,14 @@ public class Game {
 	public void nextTurn() {
 		Player turnPlayer = getCurrentPlayerForTurn();
 		Player nextPlayer = GameHelper.getNextPlayer(turnPlayer);
-		turnPlayer.setTurn(false);
 		if (isEndOfRound()) {
 			nextRound();
 		} else {
+			GameHelper.getCurrentPlayerForAction().setAction(false);
 			nextPlayer.setTurn(true);
 			nextPlayer.setAction(true);
-			// TODO Have user select their role
 		}
+		turnPlayer.setTurn(false);
 	}
 
 	public void nextAction() {

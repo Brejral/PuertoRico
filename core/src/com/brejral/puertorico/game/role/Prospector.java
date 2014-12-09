@@ -13,8 +13,7 @@ public class Prospector extends Role {
 	public void onRoleStart() {
 		super.onRoleStart();
 		Player player = GameHelper.getCurrentPlayerForTurn();
-		player.addCoins(1);
-		GameHelper.getBank().removeCoinSupply(1);
+		GameHelper.addCoinsToPlayerFromSupply(player, 1);
 		super.onRoleEnd();
 	}
 }

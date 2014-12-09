@@ -2,7 +2,6 @@ package com.brejral.puertorico.desktop;
 
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -36,6 +35,7 @@ import com.brejral.puertorico.game.role.Mayor;
 import com.brejral.puertorico.game.role.Role;
 import com.brejral.puertorico.game.role.Settler;
 import com.brejral.puertorico.game.role.Trader;
+import com.brejral.puertorico.game.ship.Ship;
 
 // Tim import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 // Tim import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
@@ -58,7 +58,7 @@ public class DesktopLauncher implements ActionListener {
 	JButton[] roles = new JButton[8];
 
 	JPanel settlerCropsPanel = null;
-	JButton[] settlerCrops = new JButton[6];
+	JButton[] settlerCrops = new JButton[7];
 
 	JPanel buildingsPanel = null;
 	JButton[] buildings = new JButton[50];
@@ -123,14 +123,20 @@ public class DesktopLauncher implements ActionListener {
 		} else if (cmd.startsWith("chooseRole")) {
 			displayMessage("Role " + cmd.substring(11) + " was choosen");
 			GameHelper.selectRoleForPlayer(cmd.substring(11));
-			updateAll();
 		} else if (cmd.startsWith("chooseBuilding")) {
 			displayMessage("Building " + cmd.substring(15) + " was choosen");
+			((Builder)GameHelper.getCurrentRole()).onBuildingSelect(cmd.substring(15));
+		} else if (cmd.startsWith("choosePlayerBuilding")) {
+			displayMessage("Player Building " + cmd.substring(21) + " was choosen");
+			if (GameHelper.isRole(Builder.NAME)) {
+				((Builder)GameHelper.getCurrentRole()).onLocationSelect(Integer.parseInt(cmd.substring(21)));
+			}
 		} else if (cmd.equals("disable")) {
 			// b2.setEnabled(false);
 		} else {
 			// b2.setEnabled(true);
 		}
+		updateAll();
 	}
 
 	/* ********************************************************************************************** */
@@ -190,13 +196,16 @@ public class DesktopLauncher implements ActionListener {
 	/* ********************************************************************************************** */
 	private void updateRoles() {
 		boolean setEnabled = !GameHelper.hasRoleBeenSelected();
-		List<Role> roleList = GameHelper.getRoles();
-		for (int i = 0; i < GameHelper.getNumberOfRoles(); i++) {
-			Role role = i < roleList.size() ? roleList.get(i) : null;
-			roles[i].setVisible(i < roleList.size());
-			roles[i].setEnabled(setEnabled);
-			if (role != null) {
-				roles[i].setText(role.getName() + (role.getBonusCoins() > 0 ? "(" + role.getBonusCoins() + ")" : ""));
+		List<String> roleList = GameHelper.getRoleNames();
+		for (int i = 0; i < roleList.size(); i++) {
+			String roleName = roleList.get(i);
+			Role role = GameHelper.getRole(roleName);
+			roles[i].setEnabled(setEnabled && GameHelper.isRoleAvailable(roleName));
+			roles[i].setText(roleName + (role != null && role.getBonusCoins() > 0 ? " (" + role.getBonusCoins() + ")" : ""));
+			if (GameHelper.isRole(roleName)) {
+				roles[i].setBackground(Color.GREEN);
+			} else {
+				roles[i].setBackground(null);
 			}
 		}
 	}
@@ -246,7 +255,7 @@ public class DesktopLauncher implements ActionListener {
 		boolean enabled = false;
 		List<String> affordableBuildings = null;
 		if (role != null && role.getName().equals(Builder.NAME)) {
-			enabled = true;
+			enabled = !((Builder)role).hasSelectedBuilding();
 			affordableBuildings = ((Builder)role).buildingsPlayerCanBuild();
 		}
 
@@ -278,6 +287,7 @@ public class DesktopLauncher implements ActionListener {
 			settlerCrops[i].setText(name);
 			settlerCrops[i].setEnabled(enabled);
 		}
+		settlerCrops[settlerCropSupply.size()].setEnabled(enabled && ((Settler)role).canChooseQuarry(GameHelper.getCurrentPlayerForAction()));
 		settlerCropsPanel.setEnabled(enabled);
 	}
 
@@ -301,14 +311,15 @@ public class DesktopLauncher implements ActionListener {
 		if (role != null && role.getName().equals(Captain.NAME)) {
 			enabled = true;
 		}
-		// :TODO: Need to add method to get cargo for each cargo ship
-		String cargoShipsLabel = "\u25A1 \u25A1 \u25A1 \u25A1 \u25A1";
-		for (int i=0; i < 3; i++) {
-			cargoShipsLabel += " \u25A1";
+		List<Ship> cargoShipList = GameHelper.getCargoShips();
+		for (int i=0; i < cargoShipList.size(); i++) {
+			String cargoShipsLabel = "\u25A1";
+			for (int j = 1; j < cargoShipList.get(i).getGoodCapacity(); j++) {
+				cargoShipsLabel += " \u25A1";
+			}
 			cargoShips[i].setText(cargoShipsLabel);
 			cargoShips[i].setEnabled(enabled);
 		}
-		cargoShipsPanel.setEnabled(enabled);
 	}
 
 	/* ********************************************************************************************** */
@@ -347,7 +358,7 @@ public class DesktopLauncher implements ActionListener {
 			}
 
 			// White King \u2654 or Black King \u265A or Army Star \u272F or Outline Star \u2729
-			tabbedPlayerPane.setTitleAt(i, name + (player.isGovernor() ? " \u2736" : "") + (player.isTurn() ? " \u21D0" : ""));
+			tabbedPlayerPane.setTitleAt(i, name + (player.isGovernor() ? " \u2654" : "") + (player.isTurn() ? " \u2736" : "") + (player.isAction() ? " \u21D0" : ""));
 
 			// Display the Number of Main Supplies Remaining
 			int supplyCoins = player.getCoins();
@@ -365,16 +376,19 @@ public class DesktopLauncher implements ActionListener {
 			// Display the Buildings owned by this Player
 			List<Building> ownedBuildings = player.getBuildings();
 			for (int j = 0; j < playerBuildingsMax; j++) {
-				if (j < ownedBuildings.size() && ownedBuildings.get(j) != null) {
-					Building building = ownedBuildings.get(j);
+				Building building = ownedBuildings.get(j);
+				if (building != null) {
 					name = building.getName();
-					for (int k = 0; i < building.getSettlerSlots(); i++) {
-						name += building.getSettlers() >= k ? "\u25A0" : "\u25A1";
+					for (int k = 0; k < building.getSettlerSlots(); k++) {
+						name += building.getSettlers() >= k + 1 ? " \u25A0" : " \u25A1";
 					}
 					playerBuildings[i][j].setText(name);
+					playerBuildings[i][j].setEnabled(GameHelper.isRole(Mayor.NAME));
 				} else {
 					playerBuildings[i][j].setText("\u25Ac");
+					playerBuildings[i][j].setEnabled(player.isAction() && GameHelper.isRole(Builder.NAME) && ((Builder)GameHelper.getCurrentRole()).canPlayerBuildInLocation(j));
 				}
+				
 			}
 
 			// Display the Crops owned by this Player
@@ -387,6 +401,7 @@ public class DesktopLauncher implements ActionListener {
 				} else {
 					playerCrops[i][j].setText("\u25Ac");
 				}
+				playerCrops[i][j].setEnabled(GameHelper.isRole(Mayor.NAME));
 			}
 		}
 	}
@@ -524,10 +539,9 @@ public class DesktopLauncher implements ActionListener {
 		JPanel rolesPanel = new JPanel(new GridLayout(1, 0), false);
 		rolesPanel.setBorder(rolesBorder);
 
-		List<Role> rolesList = GameHelper.getBank().getRoles();
-		int numRoles = GameHelper.getNumberOfRoles();
-		for (int i = 0; i < numRoles; i++) {
-			String name = rolesList.get(i).getName();
+		List<String> rolesList = GameHelper.getRoleNames();
+		for (int i = 0; i < rolesList.size(); i++) {
+			String name = rolesList.get(i);
 			roles[i] = createButton(rolesPanel, name, "chooseRole " + name);
 		}
 		mainPanel.add(rolesPanel);
@@ -547,6 +561,7 @@ public class DesktopLauncher implements ActionListener {
 			String name = settlerCropSupply.get(i).getName();
 			settlerCrops[i] = createButton(settlerCropsPanel, name, "chooseCrop " + i);
 		}
+		settlerCrops[settlerCropSupply.size()] = createButton(settlerCropsPanel, Quarry.NAME, "chooseQuarry ");
 		mainPanel.add(settlerCropsPanel);
 
 		// Buildings
@@ -594,9 +609,12 @@ public class DesktopLauncher implements ActionListener {
 		cargoShipsPanel = new JPanel(new GridLayout(1, 0), false);
 		cargoShipsPanel.setBorder(cargoShipsBorder);
 		// Display Cargo Ship elements
-		String cargoShipsLabel = "\u25A1 \u25A1 \u25A1 \u25A1 \u25A1";
-		for (int i=0; i < 3; i++) {
-			cargoShipsLabel += " \u25A1";
+		List<Ship> cargoShipList = GameHelper.getCargoShips();
+		for (int i=0; i < cargoShipList.size(); i++) {
+			String cargoShipsLabel = "\u25A1";
+			for (int j = 1; j < cargoShipList.get(i).getGoodCapacity(); j++) {
+				cargoShipsLabel += " \u25A1";
+			}
 			cargoShips[i] = createButton(cargoShipsPanel, cargoShipsLabel, "chooseCargoShip " + i);
 		}
 		subPanel.add(cargoShipsPanel);

@@ -26,7 +26,7 @@ public class Trader extends Role {
 		Player player = GameHelper.getCurrentPlayerForAction();
 		tradedCrops.add(cropName);
 		player.subtractGood(cropName, 1);
-		GameHelper.addGoodSupply(cropName, 1);
+		GameHelper.addGoodsToSupply(cropName, 1);
 		int price = GameHelper.getCropPrice(cropName);
 		price += player.getNumberActiveBuildings(SmallMarket.NAME);
 		price += 2 * player.getNumberActiveBuildings(LargeMarket.NAME);
@@ -42,7 +42,7 @@ public class Trader extends Role {
 	public void onRoleEnd() {
 		if (tradedCrops.size() == 4) {
 			for (String cropName : tradedCrops) {
-				GameHelper.addGoodSupply(cropName, 1);
+				GameHelper.addGoodsToSupply(cropName, 1);
 			}
 			tradedCrops.clear();
 		}
