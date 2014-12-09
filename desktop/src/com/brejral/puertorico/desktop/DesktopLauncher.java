@@ -286,10 +286,10 @@ public class DesktopLauncher implements ActionListener {
 		}
 
 		List<Crop> settlerCropSupply = GameHelper.getSettlerCropSupply();
-		for (int i = 0; i < settlerCropSupply.size(); i++) {
-			String name = settlerCropSupply.get(i).getName();
+		for (int i = 0; i < GameHelper.getNumberOfSettlerCropSupply(); i++) {
+			String name = i < settlerCropSupply.size() ? settlerCropSupply.get(i).getName() : "\u25Ac";
 			settlerCrops[i].setText(name);
-			settlerCrops[i].setEnabled(enabled);
+			settlerCrops[i].setEnabled(enabled && !name.equals("\u25Ac"));
 		}
 		settlerCrops[settlerCropSupply.size()].setEnabled(enabled && ((Settler)role).canChooseQuarry(GameHelper.getCurrentPlayerForAction()));
 		settlerCropsPanel.setEnabled(enabled);

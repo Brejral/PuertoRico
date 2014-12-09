@@ -38,7 +38,7 @@ public class Builder extends Role {
 		GameHelper.addCoinsToSupplyFromPlayer(player, player.getPriceOfBuildingForPlayer(building));
 		selectedBuilding = null;
 		if (GameHelper.getNextPlayer(player).equals(GameHelper.getCurrentPlayerForTurn())) {
-			super.onRoleEnd();
+			onRoleEnd();
 		} else {
 			super.onAction();
 		}

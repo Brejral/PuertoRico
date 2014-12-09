@@ -56,6 +56,10 @@ public class GameHelper {
 	public static List<Crop> getSettlerCropSupply() {
 		return getBank().getSettlerCropSupply();
 	}
+	
+	public static int getNumberOfSettlerCropSupply() {
+		return getNumberOfPlayers() + 1;
+	}
 
 	public static void addCoinsToPlayerFromSupply(Player player, int value) {
 		getBank().subtractCoinFromSupply(value);

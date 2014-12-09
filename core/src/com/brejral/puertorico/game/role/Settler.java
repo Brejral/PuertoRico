@@ -26,7 +26,11 @@ public class Settler extends Role {
 			bonusCrop.setIsSettled(player.hasActiveBuilding(Hospice.NAME));
 			player.addCrop(bonusCrop);
 		}
-		super.onAction();
+		if (GameHelper.getNextPlayer(player).equals(GameHelper.getCurrentPlayerForTurn())) {
+			onRoleEnd();
+		} else {
+			super.onAction();
+		}
 	}
 	
 	public void onRoleEnd() {
