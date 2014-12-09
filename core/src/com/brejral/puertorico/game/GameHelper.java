@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import com.brejral.puertorico.game.bank.Bank;
 import com.brejral.puertorico.game.building.Building;
+import com.brejral.puertorico.game.building.Hospice;
 import com.brejral.puertorico.game.crop.Coffee;
 import com.brejral.puertorico.game.crop.Corn;
 import com.brejral.puertorico.game.crop.Crop;
@@ -14,6 +15,7 @@ import com.brejral.puertorico.game.crop.Quarry;
 import com.brejral.puertorico.game.crop.Sugar;
 import com.brejral.puertorico.game.crop.Tobacco;
 import com.brejral.puertorico.game.player.Player;
+import com.brejral.puertorico.game.role.Prospector;
 import com.brejral.puertorico.game.role.Role;
 import com.brejral.puertorico.game.ship.Ship;
 
@@ -154,6 +156,9 @@ public class GameHelper {
 		Role role = getBank().getRole(roleName);
 		getBank().removeRole(role);
 		getCurrentPlayerForTurn().setRole(role);
+		if (role.getName().equals(Prospector.NAME)) {
+			((Prospector)role).onRoleStart();
+		}
 	}
 
 	public static void resupplySettlerShip(int openSlots) {
@@ -257,9 +262,11 @@ public class GameHelper {
 		return goodNames;
 	}
 
-	public static void addCropToPlayerFromSettlerCropSupply(Player player, Crop crop, boolean isSettled) {
+	public static void addCropToPlayerFromSettlerCropSupply(Player player, Crop crop) {
 		getSettlerCropSupply().remove(crop);
-		crop.setIsSettled(isSettled);
+		if (player.hasActiveBuilding(Hospice.NAME)) {
+			crop.setIsSettled(true);
+		}
 		player.addCrop(crop);
 	}
 	

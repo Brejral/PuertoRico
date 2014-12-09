@@ -118,8 +118,9 @@ public class DesktopLauncher implements ActionListener {
 		if (cmd.startsWith("chooseCrop")) {
 			int idx = Integer.parseInt(cmd.substring(11));
 			List<Crop> settlerCrops = GameHelper.getSettlerCropSupply();
-			String name = settlerCrops.get(idx).getName();
-			displayMessage("Crop " + idx + "(" + name + ") was choosen");
+			Crop crop = settlerCrops.get(idx);
+			displayMessage("Crop " + idx + "(" + crop.getName() + ") was choosen");
+			((Settler)GameHelper.getCurrentRole()).onCropSelect(crop);
 		} else if (cmd.startsWith("chooseRole")) {
 			displayMessage("Role " + cmd.substring(11) + " was choosen");
 			GameHelper.selectRoleForPlayer(cmd.substring(11));
@@ -131,6 +132,9 @@ public class DesktopLauncher implements ActionListener {
 			if (GameHelper.isRole(Builder.NAME)) {
 				((Builder)GameHelper.getCurrentRole()).onLocationSelect(Integer.parseInt(cmd.substring(21)));
 			}
+		} else if (cmd.startsWith("chooseQuarry")) {
+			displayMessage("Quarry was choosen");
+			((Settler)GameHelper.getCurrentRole()).onCropSelect(new Quarry());
 		} else if (cmd.equals("disable")) {
 			// b2.setEnabled(false);
 		} else {
