@@ -123,7 +123,11 @@ public class DesktopLauncher implements ActionListener {
 			((Settler)GameHelper.getCurrentRole()).onCropSelect(crop);
 		} else if (cmd.startsWith("chooseRole")) {
 			displayMessage("Role " + cmd.substring(11) + " was choosen");
-			GameHelper.selectRoleForPlayer(cmd.substring(11));
+			if (cmd.substring(11).equals(Mayor.NAME) && GameHelper.hasRoleBeenSelected()) {
+				((Mayor)GameHelper.getCurrentRole()).onAction();
+			} else {
+				GameHelper.selectRoleForPlayer(cmd.substring(11));
+			}
 		} else if (cmd.startsWith("chooseBuilding")) {
 			displayMessage("Building " + cmd.substring(15) + " was choosen");
 			((Builder)GameHelper.getCurrentRole()).onBuildingSelect(cmd.substring(15));
@@ -131,6 +135,13 @@ public class DesktopLauncher implements ActionListener {
 			displayMessage("Player Building " + cmd.substring(21) + " was choosen");
 			if (GameHelper.isRole(Builder.NAME)) {
 				((Builder)GameHelper.getCurrentRole()).onLocationSelect(Integer.parseInt(cmd.substring(21)));
+			} else if (GameHelper.isRole(Mayor.NAME)) {
+				((Mayor)GameHelper.getCurrentRole()).addRemoveSettler(true, Integer.parseInt(cmd.substring(21)));
+			}
+		} else if (cmd.startsWith("choosePlayerCrop")) {
+			displayMessage("Player Crop " + cmd.substring(17) + " was choosen");
+			if (GameHelper.isRole(Mayor.NAME)) {
+				((Mayor)GameHelper.getCurrentRole()).addRemoveSettler(false, Integer.parseInt(cmd.substring(17)));
 			}
 		} else if (cmd.startsWith("chooseQuarry")) {
 			displayMessage("Quarry was choosen");
@@ -208,6 +219,9 @@ public class DesktopLauncher implements ActionListener {
 			roles[i].setText(roleName + (role != null && role.getBonusCoins() > 0 ? " (" + role.getBonusCoins() + ")" : ""));
 			if (GameHelper.isRole(roleName)) {
 				roles[i].setBackground(Color.GREEN);
+				if (roleName.equals(Mayor.NAME)) {
+					roles[i].setEnabled(true);
+				}
 			} else {
 				roles[i].setBackground(null);
 			}
@@ -383,7 +397,7 @@ public class DesktopLauncher implements ActionListener {
 						name += building.getSettlers() >= k + 1 ? " \u25A0" : " \u25A1";
 					}
 					playerBuildings[i][j].setText(name);
-					playerBuildings[i][j].setEnabled(GameHelper.isRole(Mayor.NAME));
+					playerBuildings[i][j].setEnabled(player.isAction() && GameHelper.isRole(Mayor.NAME) && (building.getSettlers() > 0 || player.getSettlers() > 0));
 				} else {
 					playerBuildings[i][j].setText("\u25Ac");
 					playerBuildings[i][j].setEnabled(player.isAction() && GameHelper.isRole(Builder.NAME) && ((Builder)GameHelper.getCurrentRole()).canPlayerBuildInLocation(j));
@@ -394,14 +408,15 @@ public class DesktopLauncher implements ActionListener {
 			// Display the Crops owned by this Player
 			List<Crop> ownedCrops = player.getCrops();
 			for (int j = 0; j < playerCropsMax; j++) {
-				if (j < ownedCrops.size() && ownedCrops.get(j) != null) {
-					Crop crop = ownedCrops.get(j);
+				Crop crop = j < ownedCrops.size() && ownedCrops.get(j) != null ? ownedCrops.get(j) : null;
+				boolean isEnabled = player.isAction() && GameHelper.isRole(Mayor.NAME) && crop != null && (crop.isSettled() || player.getSettlers() != 0);
+				if (crop != null) {
 					name = crop.getName() + " " + (crop.isSettled() ? "\u25A0" : "\u25A1");
 					playerCrops[i][j].setText(name);
 				} else {
 					playerCrops[i][j].setText("\u25Ac");
 				}
-				playerCrops[i][j].setEnabled(GameHelper.isRole(Mayor.NAME));
+				playerCrops[i][j].setEnabled(isEnabled);
 			}
 		}
 	}

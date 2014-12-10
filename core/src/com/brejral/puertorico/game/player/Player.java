@@ -300,6 +300,10 @@ public class Player {
 	public void addSettlers(int value) {
 		this.settlers += value;
 	}
+	
+	public void subtractSettlers(int value) {
+		this.settlers -= value;
+	}
 
 	public boolean didSelectRole() {
 		return isAction && isTurn;

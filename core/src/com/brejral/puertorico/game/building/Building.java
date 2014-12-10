@@ -7,7 +7,7 @@ public class Building {
 				"Tobacco Storage", "Coffee Roaster", "Factory", "University", "Harbor", "Wharf", "Guild Hall", "Residence", "Fortress", "City Hall", "Customs House" };
 	private String name;
 	private int size = 1, settlerSlots = 1, settlers, price, points;
-	private boolean isProduction = false;
+	private boolean isProduction = false, isRemovingSettler = false;
 	private String crop;
 
 	public Building(String nm) {
@@ -29,6 +29,18 @@ public class Building {
 	public boolean isUtility() {
 		return !isProduction;
 	}
+	
+	public boolean isRemovingSettler() {
+		return isRemovingSettler;
+	}
+	
+	public void invertIsRemovingSettler() {
+		isRemovingSettler = !isRemovingSettler;
+	}
+	
+	public void setIsRemovingSettler(boolean value) {
+		isRemovingSettler = value;
+	}
 
 	public int getSettlerSlots() {
 		return settlerSlots;
@@ -44,6 +56,14 @@ public class Building {
 
 	public void setSettlers(int settlers) {
 		this.settlers = settlers;
+	}
+	
+	public void addSettlers(int value) {
+		this.settlers += value;
+	}
+	
+	public void subtractSettlers(int value) {
+		this.settlers -= value;
 	}
 
 	public int getPrice() {
