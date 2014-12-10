@@ -291,7 +291,7 @@ public class Bank {
 		settlerShip.setSettlers(resupply);
 		settlerSupply -= resupply;
 	}
-
+	
 	public List<Ship> getCargoShips() {
 		return cargoShips;
 	}

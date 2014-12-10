@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.brejral.puertorico.game.GameHelper;
 import com.brejral.puertorico.game.player.Player;
+import com.brejral.puertorico.game.ship.Ship;
 
 public class Mayor extends Role {
 	public static final String NAME = "Mayor";
@@ -16,18 +17,25 @@ public class Mayor extends Role {
 	public void onRoleStart() {
 		super.onRoleStart();
 		List<Integer> newSettlersList = new ArrayList<Integer>(GameHelper.getNumberOfPlayers());
-		int modSettlers = GameHelper.getSettlerShip().getSettlers() % GameHelper.getNumberOfPlayers();
-		int settlersPerPlayer = GameHelper.getSettlerShip().getSettlers()/GameHelper.getNumberOfPlayers();
-		for (int i = 0; i < newSettlersList.size(); i++) {
+		Ship settlerShip = GameHelper.getSettlerShip();
+		int modSettlers = settlerShip.getSettlers() % GameHelper.getNumberOfPlayers();
+		int settlersPerPlayer = settlerShip.getSettlers()/GameHelper.getNumberOfPlayers();
+		for (int i = 0; i < GameHelper.getNumberOfPlayers(); i++) {
 			int value = settlersPerPlayer;
 			if (i < modSettlers) {
 				value++;
 			}
-			if (i == 0) {
+			if (i == 0 && GameHelper.getSettlerSupply() > 0) {
 				value++;
 			}
-			newSettlersList.set(i, value);
+			newSettlersList.add(value);
 		}
+		List<Player> players = GameHelper.getPlayerListForTurn();
+		for (int i = 0; i < players.size(); i++) {
+			players.get(i).addSettlers(newSettlersList.get(i));
+		}
+		GameHelper.subtractSettlerFromSupply();
+		settlerShip.clearSettlers();
 	}
 	
 	public void onRoleEnd() {

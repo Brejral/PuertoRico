@@ -297,15 +297,7 @@ public class DesktopLauncher implements ActionListener {
 
 	/* ********************************************************************************************** */
 	private void updateColonistShip() {
-		Role role = GameHelper.getCurrentRole();
-		boolean enabled = false;
-		if (role != null && role.getName().equals(Mayor.NAME)) {
-			enabled = true;
-		}
-		// :TODO: Need to add method to get number of colonist on the colonist ship
-		colonistShip.setText("Coloinist " + GameHelper.getNumberOfPlayers());
-		colonistShip.setEnabled(enabled);
-		colonistShipPanel.setEnabled(enabled);
+		colonistShip.setText("Coloinist " + GameHelper.getSettlerShip().getSettlers());
 	}
 
 	/* ********************************************************************************************** */
@@ -359,6 +351,10 @@ public class DesktopLauncher implements ActionListener {
 
 			if (name == null) {
 				name = "Player " + (i + 1);
+			}
+			
+			if (player.isAction()) {
+				tabbedPlayerPane.setSelectedIndex(i);
 			}
 
 			// White King \u2654 or Black King \u265A or Army Star \u272F or Outline Star \u2729

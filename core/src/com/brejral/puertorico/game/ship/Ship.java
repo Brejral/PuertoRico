@@ -24,6 +24,10 @@ public class Ship {
 		return settlers;
 	}
 	
+	public void clearSettlers() {
+		settlers = 0;
+	}
+	
 	public int getGoodCapacity() {
 		return goodCapacity;
 	}
