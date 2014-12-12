@@ -38,7 +38,7 @@ public class Player {
 
 	public Player(String name) {
 		this.name = name;
-		initializeLists();
+		initialize();
 	}
 
 	public Player(User usr) {
@@ -58,9 +58,12 @@ public class Player {
 		coins = 0;
 	}
 
-	public void initializeLists() {
+	public void initialize() {
 		for (int i = 0; i < 12; i++) {
 			buildings.add(null);
+		}
+		for (String cropName : Crop.CROP_LIST) {
+			goods.put(cropName, 0);
 		}
 	}
 
@@ -88,7 +91,7 @@ public class Player {
 		return isGovernor;
 	}
 
-	public void setGovenor(boolean isGovernor) {
+	public void setGovernor(boolean isGovernor) {
 		this.isGovernor = isGovernor;
 	}
 
@@ -156,6 +159,10 @@ public class Player {
 
 	public void clearRole() {
 		setRole(null);
+	}
+	
+	public boolean isRole(String roleName) {
+		return role != null ? role.getName().equals(roleName) : false;
 	}
 
 	public int getNumberProductionSettlersForCrop(String cropName) {

@@ -13,6 +13,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.Border;
@@ -44,6 +45,7 @@ public class DesktopLauncher implements ActionListener {
 
 	/* ********************************************************************************************** */
 	// Global GUI items
+	JFrame mainFrame;
 	JLabel supplyCoinsLabel;
 	JLabel supplyPointsLabel;
 	JLabel supplySettlersLabel;
@@ -68,7 +70,7 @@ public class DesktopLauncher implements ActionListener {
 
 	JPanel cargoShipsPanel;
 	JButton[] cargoShips = new JButton[3];
-	
+
 	JPanel tradingHousePanel;
 	JLabel tradingHouse;
 
@@ -76,11 +78,11 @@ public class DesktopLauncher implements ActionListener {
 	JLabel[] playerPointsLabel = new JLabel[5];
 	JLabel[] playerSettlersLabel = new JLabel[5];
 
-	JLabel[] playerGoodsCoffeeLabel = new JLabel[5];
-	JLabel[] playerGoodsCornLabel = new JLabel[5];
-	JLabel[] playerGoodsIndigoLabel = new JLabel[5];
-	JLabel[] playerGoodsSugarLabel = new JLabel[5];
-	JLabel[] playerGoodsTobaccoLabel = new JLabel[5];
+	JButton[] playerGoodsCoffeeButton = new JButton[5];
+	JButton[] playerGoodsCornButton = new JButton[5];
+	JButton[] playerGoodsIndigoButton = new JButton[5];
+	JButton[] playerGoodsSugarButton = new JButton[5];
+	JButton[] playerGoodsTobaccoButton = new JButton[5];
 	JLabel[] playerGoodsQuarryLabel = new JLabel[5];
 
 	JTabbedPane tabbedPlayerPane = null;
@@ -102,14 +104,14 @@ public class DesktopLauncher implements ActionListener {
 	 */
 	public DesktopLauncher() {
 		// Create and set up the window.
-		JFrame frame = new JFrame("Puerto Rico");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame = new JFrame("Puerto Rico");
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		createMainPanel(frame);
+		createMainPanel(mainFrame);
 
 		// Display the window.
-		frame.pack();
-		frame.setVisible(true);
+		mainFrame.pack();
+		mainFrame.setVisible(true);
 	}
 
 	/* ********************************************************************************************** */
@@ -120,32 +122,41 @@ public class DesktopLauncher implements ActionListener {
 			List<Crop> settlerCrops = GameHelper.getSettlerCropSupply();
 			Crop crop = settlerCrops.get(idx);
 			displayMessage("Crop " + idx + "(" + crop.getName() + ") was choosen");
-			((Settler)GameHelper.getCurrentRole()).onCropSelect(crop);
+			((Settler) GameHelper.getCurrentRole()).onCropSelect(crop);
 		} else if (cmd.startsWith("chooseRole")) {
 			displayMessage("Role " + cmd.substring(11) + " was choosen");
 			if (cmd.substring(11).equals(Mayor.NAME) && GameHelper.hasRoleBeenSelected()) {
-				((Mayor)GameHelper.getCurrentRole()).onAction();
+				((Mayor) GameHelper.getCurrentRole()).onAction();
+			} else if (cmd.substring(11).equals(Trader.NAME) && GameHelper.hasRoleBeenSelected()) {
+				((Trader) GameHelper.getCurrentRole()).tradeGood("None");
+			} else if (cmd.substring(11).equals(Builder.NAME) && GameHelper.hasRoleBeenSelected()) {
+				((Builder) GameHelper.getCurrentRole()).advanceAction();
 			} else {
 				GameHelper.selectRoleForPlayer(cmd.substring(11));
 			}
 		} else if (cmd.startsWith("chooseBuilding")) {
 			displayMessage("Building " + cmd.substring(15) + " was choosen");
-			((Builder)GameHelper.getCurrentRole()).onBuildingSelect(cmd.substring(15));
+			((Builder) GameHelper.getCurrentRole()).onBuildingSelect(cmd.substring(15));
 		} else if (cmd.startsWith("choosePlayerBuilding")) {
 			displayMessage("Player Building " + cmd.substring(21) + " was choosen");
 			if (GameHelper.isRole(Builder.NAME)) {
-				((Builder)GameHelper.getCurrentRole()).onLocationSelect(Integer.parseInt(cmd.substring(21)));
+				((Builder) GameHelper.getCurrentRole()).onLocationSelect(Integer.parseInt(cmd.substring(21)));
 			} else if (GameHelper.isRole(Mayor.NAME)) {
-				((Mayor)GameHelper.getCurrentRole()).addRemoveSettler(true, Integer.parseInt(cmd.substring(21)));
+				((Mayor) GameHelper.getCurrentRole()).addRemoveSettler(true, Integer.parseInt(cmd.substring(21)));
 			}
 		} else if (cmd.startsWith("choosePlayerCrop")) {
 			displayMessage("Player Crop " + cmd.substring(17) + " was choosen");
 			if (GameHelper.isRole(Mayor.NAME)) {
-				((Mayor)GameHelper.getCurrentRole()).addRemoveSettler(false, Integer.parseInt(cmd.substring(17)));
+				((Mayor) GameHelper.getCurrentRole()).addRemoveSettler(false, Integer.parseInt(cmd.substring(17)));
+			}
+		} else if (cmd.startsWith("choosePlayerGood")) {
+			displayMessage("Player Good " + cmd.substring(17) + " was choosen");
+			if (GameHelper.isRole(Trader.NAME)) {
+				((Trader) GameHelper.getCurrentRole()).tradeGood(cmd.substring(17));
 			}
 		} else if (cmd.startsWith("chooseQuarry")) {
 			displayMessage("Quarry was choosen");
-			((Settler)GameHelper.getCurrentRole()).onCropSelect(new Quarry());
+			((Settler) GameHelper.getCurrentRole()).onCropSelect(new Quarry());
 		} else if (cmd.equals("disable")) {
 			// b2.setEnabled(false);
 		} else {
@@ -195,6 +206,11 @@ public class DesktopLauncher implements ActionListener {
 	}
 
 	/* ********************************************************************************************** */
+	private int showGoodSelectionWindow(List<String> cropOptions, String message) {
+		return JOptionPane.showOptionDialog(mainFrame, message, "Select Good", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, cropOptions.toArray(), null);
+	}
+
+	/* ********************************************************************************************** */
 	private void updateAll() {
 		updateRoles();
 		updateSupplies();
@@ -205,7 +221,7 @@ public class DesktopLauncher implements ActionListener {
 		updateCargoShips();
 		updateTradingHouse();
 		updatePlayers();
-
+		// checkForGoodSelection();
 	}
 
 	/* ********************************************************************************************** */
@@ -219,7 +235,7 @@ public class DesktopLauncher implements ActionListener {
 			roles[i].setText(roleName + (role != null && role.getBonusCoins() > 0 ? " (" + role.getBonusCoins() + ")" : ""));
 			if (GameHelper.isRole(roleName)) {
 				roles[i].setBackground(Color.GREEN);
-				if (roleName.equals(Mayor.NAME)) {
+				if (roleName.equals(Mayor.NAME) || roleName.equals(Trader.NAME) || roleName.equals(Builder.NAME)) {
 					roles[i].setEnabled(true);
 				}
 			} else {
@@ -273,8 +289,8 @@ public class DesktopLauncher implements ActionListener {
 		boolean enabled = false;
 		List<String> affordableBuildings = null;
 		if (role != null && role.getName().equals(Builder.NAME)) {
-			enabled = !((Builder)role).hasSelectedBuilding();
-			affordableBuildings = ((Builder)role).buildingsPlayerCanBuild();
+			enabled = !((Builder) role).hasSelectedBuilding();
+			affordableBuildings = ((Builder) role).buildingsPlayerCanBuild();
 		}
 
 		// Get a set of the Building entries
@@ -305,7 +321,7 @@ public class DesktopLauncher implements ActionListener {
 			settlerCrops[i].setText(name);
 			settlerCrops[i].setEnabled(enabled && !name.equals("\u25Ac"));
 		}
-		settlerCrops[settlerCropSupply.size()].setEnabled(enabled && ((Settler)role).canChooseQuarry(GameHelper.getCurrentPlayerForAction()));
+		settlerCrops[settlerCropSupply.size()].setEnabled(enabled && ((Settler) role).canChooseQuarry(GameHelper.getCurrentPlayerForAction()));
 		settlerCropsPanel.setEnabled(enabled);
 	}
 
@@ -322,7 +338,7 @@ public class DesktopLauncher implements ActionListener {
 			enabled = true;
 		}
 		List<Ship> cargoShipList = GameHelper.getCargoShips();
-		for (int i=0; i < cargoShipList.size(); i++) {
+		for (int i = 0; i < cargoShipList.size(); i++) {
 			String cargoShipsLabel = "\u25A1";
 			for (int j = 1; j < cargoShipList.get(i).getGoodCapacity(); j++) {
 				cargoShipsLabel += " \u25A1";
@@ -334,23 +350,20 @@ public class DesktopLauncher implements ActionListener {
 
 	/* ********************************************************************************************** */
 	private void updateTradingHouse() {
-		Role role = GameHelper.getCurrentRole();
-		boolean enabled = false;
-		if (role != null && role.getName().equals(Trader.NAME)) {
-			enabled = true;
+		String tradingHouseLabel = "";
+		List<String> tradedGoods = GameHelper.getTradedGoods();
+		for (int i = 0; i < 4; i++) {
+			String goodName = i < tradedGoods.size() ? tradedGoods.get(i) : null;
+			if (goodName != null) {
+				tradingHouseLabel += "<font color=" + getColorForCrop(goodName) + "> \u25a0 </font>";
+			} else {
+				tradingHouseLabel += " \u25a1 ";
+			}
 		}
-		// :TODO: Need to add method to get list of goods in the trader house
-		// String tradingHouseLabel = "\u25A1 \u25A1 \u25A1 \u25A1       ";
-		// String text = "<font color=#FFCC00>Corn=0</font> " + 
-		//               "<font color='blue'>Indigo=1 </font>" +
-		//               "<font color=#B2B28F>Sugar=2 </font>" +
-		//               "<font color=#5C1F00>Tobacco=3 </font>" +
-		//               "<font color='black'>Indigo=4 </font>";
-		// tradingHouse.setText("<html>" + tradingHouseLabel + text + "</html>");
-		String tradingHouseLabel = "\u25A1 \u25A1 \u25A1 \u25A1       Corn=0 Indigo=1 Sugar=2 Tobacco=3 Coffee=4";
-		tradingHouse.setText(tradingHouseLabel);
-		tradingHouse.setEnabled(enabled);
-		tradingHousePanel.setEnabled(enabled);
+		tradingHouseLabel += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + "<font color=yellow>Corn=0 </font>" + "<font color=blue>Indigo=1 </font>" + "<font color=#D2D2A0>Sugar=2 </font>" + "<font color=#C8AA82>Tobacco=3 </font>"
+					+ "<font color=black>Coffee=4 </font>";
+		tradingHouse.setText("<html>" + tradingHouseLabel + "</html>");
+
 	}
 
 	/* ********************************************************************************************** */
@@ -366,7 +379,7 @@ public class DesktopLauncher implements ActionListener {
 			if (name == null) {
 				name = "Player " + (i + 1);
 			}
-			
+
 			if (player.isAction()) {
 				tabbedPlayerPane.setSelectedIndex(i);
 			}
@@ -384,6 +397,24 @@ public class DesktopLauncher implements ActionListener {
 			int supplySettlers = player.getSettlers();
 			playerSettlersLabel[i].setText(Integer.toString(supplySettlers));
 
+			boolean goodsEnabled = player.isAction() && GameHelper.isRole(Trader.NAME);
+			List<String> goodsEnabledList = null;
+			if (goodsEnabled) {
+				if (GameHelper.isRole(Trader.NAME)) {
+					goodsEnabledList = ((Trader) GameHelper.getCurrentRole()).getTradableGoodsForCurrentPlayer();
+				}
+			}
+			playerGoodsCornButton[i].setText(Corn.NAME + " " + player.getNumberOfGoods(Corn.NAME));
+			playerGoodsCornButton[i].setEnabled(goodsEnabled && goodsEnabledList.contains(Corn.NAME));
+			playerGoodsIndigoButton[i].setText(Indigo.NAME + " " + player.getNumberOfGoods(Indigo.NAME));
+			playerGoodsIndigoButton[i].setEnabled(goodsEnabled && goodsEnabledList.contains(Indigo.NAME));
+			playerGoodsSugarButton[i].setText(Sugar.NAME + " " + player.getNumberOfGoods(Sugar.NAME));
+			playerGoodsSugarButton[i].setEnabled(goodsEnabled && goodsEnabledList.contains(Sugar.NAME));
+			playerGoodsTobaccoButton[i].setText(Tobacco.NAME + " " + player.getNumberOfGoods(Tobacco.NAME));
+			playerGoodsTobaccoButton[i].setEnabled(goodsEnabled && goodsEnabledList.contains(Tobacco.NAME));
+			playerGoodsCoffeeButton[i].setText(Coffee.NAME + " " + player.getNumberOfGoods(Coffee.NAME));
+			playerGoodsCoffeeButton[i].setEnabled(goodsEnabled && goodsEnabledList.contains(Coffee.NAME));
+
 			// List<Quarry> supplyGoodsQuarryList = GameHelper.getBank().getQuarrySupply();
 			// playerGoodsQuarryLabel[i].setText(Integer.toString(supplyGoodsQuarryList.size()));
 
@@ -400,9 +431,9 @@ public class DesktopLauncher implements ActionListener {
 					playerBuildings[i][j].setEnabled(player.isAction() && GameHelper.isRole(Mayor.NAME) && (building.getSettlers() > 0 || player.getSettlers() > 0));
 				} else {
 					playerBuildings[i][j].setText("\u25Ac");
-					playerBuildings[i][j].setEnabled(player.isAction() && GameHelper.isRole(Builder.NAME) && ((Builder)GameHelper.getCurrentRole()).canPlayerBuildInLocation(j));
+					playerBuildings[i][j].setEnabled(player.isAction() && GameHelper.isRole(Builder.NAME) && ((Builder) GameHelper.getCurrentRole()).canPlayerBuildInLocation(j));
 				}
-				
+
 			}
 
 			// Display the Crops owned by this Player
@@ -420,6 +451,26 @@ public class DesktopLauncher implements ActionListener {
 			}
 		}
 	}
+
+	/* ********************************************************************************************** */
+	// private void checkForGoodSelection() {
+	// if (GameHelper.isRole(Trader.NAME)) {
+	// Trader trader = ((Trader) GameHelper.getCurrentRole());
+	// List<String> options = trader.getTradableGoodsForCurrentPlayer();
+	// String selectedCrop = "";
+	// if (options.size() > 0) {
+	// options.add("None");
+	// int selection = showGoodSelectionWindow(options, "Select a good to trade.");
+	// selectedCrop = options.get(selection);
+	// } else {
+	// selectedCrop = "None";
+	// }
+	// trader.tradeGood(selectedCrop);
+	// updateAll();
+	// } else if (GameHelper.isRole(Captain.NAME)) {
+	//
+	// }
+	// }
 
 	/* ********************************************************************************************** */
 	// private void createPlayerPanel(JPanel panel, int idx) {
@@ -458,11 +509,11 @@ public class DesktopLauncher implements ActionListener {
 		JPanel playerGoodsPanel = new JPanel(new GridLayout(1, 0), false);
 		playerGoodsPanel.setBorder(goodsBorder);
 
-		playerGoodsCoffeeLabel[idx] = createLabelPair(playerGoodsPanel, Coffee.NAME);
-		playerGoodsCornLabel[idx] = createLabelPair(playerGoodsPanel, Corn.NAME);
-		playerGoodsIndigoLabel[idx] = createLabelPair(playerGoodsPanel, Indigo.NAME);
-		playerGoodsSugarLabel[idx] = createLabelPair(playerGoodsPanel, Sugar.NAME);
-		playerGoodsTobaccoLabel[idx] = createLabelPair(playerGoodsPanel, Tobacco.NAME);
+		playerGoodsCornButton[idx] = createButton(playerGoodsPanel, Corn.NAME + " 0", "choosePlayerGood " + Corn.NAME);
+		playerGoodsIndigoButton[idx] = createButton(playerGoodsPanel, Indigo.NAME + " 0", "choosePlayerGood " + Indigo.NAME);
+		playerGoodsSugarButton[idx] = createButton(playerGoodsPanel, Sugar.NAME + " 0", "choosePlayerGood " + Sugar.NAME);
+		playerGoodsTobaccoButton[idx] = createButton(playerGoodsPanel, Tobacco.NAME + " 0", "choosePlayerGood " + Tobacco.NAME);
+		playerGoodsCoffeeButton[idx] = createButton(playerGoodsPanel, Coffee.NAME + " 0", "choosePlayerGood " + Coffee.NAME);
 		subPanel.add(playerGoodsPanel);
 
 		playerPanel.add(subPanel);
@@ -625,7 +676,7 @@ public class DesktopLauncher implements ActionListener {
 		cargoShipsPanel.setBorder(cargoShipsBorder);
 		// Display Cargo Ship elements
 		List<Ship> cargoShipList = GameHelper.getCargoShips();
-		for (int i=0; i < cargoShipList.size(); i++) {
+		for (int i = 0; i < cargoShipList.size(); i++) {
 			String cargoShipsLabel = "\u25A1";
 			for (int j = 1; j < cargoShipList.get(i).getGoodCapacity(); j++) {
 				cargoShipsLabel += " \u25A1";
@@ -640,7 +691,7 @@ public class DesktopLauncher implements ActionListener {
 		tradingHouseBorder.setTitlePosition(TitledBorder.DEFAULT_POSITION);
 
 		// Trading House grid is 1 row
-		tradingHousePanel = new JPanel(new GridLayout(1, 0), false);
+		tradingHousePanel = new JPanel(new GridLayout(1, 5), false);
 		tradingHousePanel.setBorder(tradingHouseBorder);
 		// Display Trading House elements
 		String tradingHouseLabel = "\u25A1 \u25A1 \u25A1 \u25A1       Corn=0 Indigo=1 Sugar=2 Tobacco=3 Coffee=4";
@@ -674,6 +725,24 @@ public class DesktopLauncher implements ActionListener {
 		updateAll();
 
 		frame.getContentPane().add(mainPanel);
+	}
+
+	/* ********************************************************************************************** */
+	private String getColorForCrop(String cropName) {
+		switch (cropName) {
+		case Corn.NAME:
+			return "yellow";
+		case Indigo.NAME:
+			return "blue";
+		case Sugar.NAME:
+			return "#D2D2A0";
+		case Tobacco.NAME:
+			return "#C8AA82";
+		case Coffee.NAME:
+			return "black";
+		default:
+			return null;
+		}
 	}
 
 	/* ********************************************************************************************** */

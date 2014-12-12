@@ -1,6 +1,8 @@
 package com.brejral.puertorico.game.role;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.brejral.puertorico.game.GameHelper;
 import com.brejral.puertorico.game.building.Factory;
@@ -15,8 +17,12 @@ public class Craftsman extends Role {
 	}
 
 	public void onRoleStart() {
-		produceCropsForPlayers();
 		super.onRoleStart();
+		produceCropsForPlayers();
+		List<String> goodChoices = getGoodsPlayerCanProduceForBonus();
+		if (goodChoices.size() < 2) {
+			onAction(goodChoices.size() == 0 ? null : goodChoices.get(0));
+		}
 	}
 
 	/**
@@ -29,6 +35,18 @@ public class Craftsman extends Role {
 			GameHelper.addGoodsToPlayerFromSupply(player, cropName, 1);
 		}
 		super.onRoleEnd();
+	}
+	
+	public List<String> getGoodsPlayerCanProduceForBonus() {
+		Player player = GameHelper.getCurrentPlayerForTurn();
+		HashMap<String, Integer> goodsToProduce = player.getGoodsPlayerCanProduce();
+		List<String> cropList = new ArrayList<String>();
+		for (String cropName : Crop.CROP_LIST) {
+			if (goodsToProduce.get(cropName) > 0 && GameHelper.getGoodSupply(cropName) > 0) {
+				cropList.add(cropName);
+			}
+		}
+		return cropList;
 	}
 
 	public void produceCropsForPlayers() {

@@ -12,44 +12,53 @@ import com.brejral.puertorico.game.player.Player;
 
 public class Trader extends Role {
 	public static final String NAME = "Trader";
-	private List<String> tradedCrops = new ArrayList<String>(4);
+	private List<String> tradedGoods = new ArrayList<String>(4);
 
 	public Trader() {
 		super(NAME);
 	}
-	
+
 	public void onRoleStart() {
 		super.onRoleStart();
 	}
-	
-	public void onAction(String cropName) {
+
+	public void tradeGood(String cropName) {
 		Player player = GameHelper.getCurrentPlayerForAction();
-		tradedCrops.add(cropName);
-		player.subtractGood(cropName, 1);
-		GameHelper.addGoodsToSupply(cropName, 1);
-		int price = GameHelper.getCropPrice(cropName);
-		price += player.getNumberActiveBuildings(SmallMarket.NAME);
-		price += 2 * player.getNumberActiveBuildings(LargeMarket.NAME);
-		price += player.didSelectRole() ? 1 : 0;
-		player.addCoins(price);
-		GameHelper.addCoinsToPlayerFromSupply(player, price);
-		super.onAction();
-		if (tradedCrops.size() == 4) {
+		if (!cropName.equals("None")) {
+			tradedGoods.add(cropName);
+			player.subtractGood(cropName, 1);
+			GameHelper.addGoodsToSupply(cropName, 1);
+			int price = GameHelper.getCropPrice(cropName);
+			price += player.getNumberActiveBuildings(SmallMarket.NAME);
+			price += 2 * player.getNumberActiveBuildings(LargeMarket.NAME);
+			price += player.didSelectRole() ? 1 : 0;
+			GameHelper.addCoinsToPlayerFromSupply(player, price);
+		}
+		if (tradedGoods.size() == 4 || isEndOfRound()) {
 			onRoleEnd();
+		} else {
+			while (getTradableGoodsForCurrentPlayer().size() == 0) {
+				if (isEndOfRound()) {
+					onRoleEnd();
+					break;
+				} else {
+					super.onAction();
+				}
+			}
 		}
 	}
-	
+
 	public void onRoleEnd() {
-		if (tradedCrops.size() == 4) {
-			for (String cropName : tradedCrops) {
+		if (tradedGoods.size() == 4) {
+			for (String cropName : tradedGoods) {
 				GameHelper.addGoodsToSupply(cropName, 1);
 			}
-			tradedCrops.clear();
+			tradedGoods.clear();
 		}
 		super.onRoleEnd();
 	}
-	
-	public List<String> getTradableCropsForCurrentPlayer() {
+
+	public List<String> getTradableGoodsForCurrentPlayer() {
 		List<String> cropsToTrade = new ArrayList<String>();
 		Player player = GameHelper.getCurrentPlayerForAction();
 		for (String cropName : Crop.CROP_LIST) {
@@ -59,8 +68,16 @@ public class Trader extends Role {
 		}
 		return cropsToTrade;
 	}
-	
+
 	private boolean hasCropBeenTraded(String cropName) {
-		return tradedCrops.contains(cropName);
+		return tradedGoods.contains(cropName);
+	}
+
+	public List<String> getTradedGoods() {
+		return tradedGoods;
+	}
+
+	public boolean isEndOfRound() {
+		return GameHelper.getNextPlayer(GameHelper.getCurrentPlayerForAction()).equals(GameHelper.getCurrentPlayerForTurn());
 	}
 }

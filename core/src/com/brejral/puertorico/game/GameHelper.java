@@ -59,6 +59,10 @@ public class GameHelper {
 		return getBank().getQuarrySupply().remove(0);
 	}
 
+	public static List<Crop> getCropSupply() {
+		return getBank().getCropSupply();
+	}
+
 	public static List<Crop> getSettlerCropSupply() {
 		return getBank().getSettlerCropSupply();
 	}
@@ -291,7 +295,11 @@ public class GameHelper {
 	}
 
 	public static void addCropToPlayerFromSettlerCropSupply(Player player, Crop crop) {
-		getSettlerCropSupply().remove(crop);
+		if (crop.getName().equals(Quarry.NAME)) {
+			getQuarrySupply().remove(0);
+		} else {
+			getSettlerCropSupply().remove(crop);
+		}
 		if (player.hasActiveBuilding(Hospice.NAME)) {
 			crop.setIsSettled(true);
 		}
@@ -300,5 +308,14 @@ public class GameHelper {
 
 	public static boolean hasRoleBeenSelected() {
 		return getCurrentPlayerForTurn().getRole() != null;
+	}
+
+	public static List<String> getTradedGoods() {
+		for (Player player : getPlayers()) {
+			if (player.isRole(Trader.NAME)) {
+				return ((Trader) player.getRole()).getTradedGoods();
+			}
+		}
+		return ((Trader) getRole(Trader.NAME)).getTradedGoods();
 	}
 }

@@ -22,7 +22,7 @@ public class Settler extends Role {
 		Player player = GameHelper.getCurrentPlayerForAction();
 		GameHelper.addCropToPlayerFromSettlerCropSupply(player, crop);
 		if (player.hasActiveBuilding(Hacienda.NAME)) {
-			Crop bonusCrop = GameHelper.getSettlerCropSupply().remove(0);
+			Crop bonusCrop = GameHelper.getCropSupply().remove(0);
 			bonusCrop.setIsSettled(player.hasActiveBuilding(Hospice.NAME));
 			player.addCrop(bonusCrop);
 		}

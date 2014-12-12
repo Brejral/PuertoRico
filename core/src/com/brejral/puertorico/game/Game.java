@@ -37,7 +37,7 @@ public class Game {
 		for (int i = 0; i < numberOfPlayers; i++) {
 			Player player = players.get(i);
 			if (i == 0) {
-				player.setGovenor(true);
+				player.setGovernor(true);
 				player.setTurn(true);
 				player.setAction(true);
 			}
@@ -75,18 +75,18 @@ public class Game {
 	}
 
 	public void nextRound() {
-		Player govenor = getCurrentPlayerForRound();
-		Player nextPlayer = GameHelper.getNextPlayer(govenor);
-		govenor.setAction(false);
-		if (isLastRound()) {
+		Player governor = getCurrentPlayerForRound();
+		Player nextPlayer = GameHelper.getNextPlayer(governor);
+		governor.setGovernor(false);
+		if (isLastRound) {
 			endGame();
 		} else {
-			getBank().addBonusCoinsToRoles();
+			bank.addBonusCoinsToRoles();
 			for (Player player : players) {
-				getBank().addRole(player.getRole());
+				bank.addRole(player.getRole());
 				player.setRole(null);
 			}
-			nextPlayer.setGovenor(true);
+			nextPlayer.setGovernor(true);
 			nextPlayer.setTurn(true);
 			nextPlayer.setAction(true);
 		}
@@ -95,10 +95,10 @@ public class Game {
 	public void nextTurn() {
 		Player turnPlayer = getCurrentPlayerForTurn();
 		Player nextPlayer = GameHelper.getNextPlayer(turnPlayer);
+		GameHelper.getCurrentPlayerForAction().setAction(false);
 		if (isEndOfRound()) {
 			nextRound();
 		} else {
-			GameHelper.getCurrentPlayerForAction().setAction(false);
 			nextPlayer.setTurn(true);
 			nextPlayer.setAction(true);
 		}
