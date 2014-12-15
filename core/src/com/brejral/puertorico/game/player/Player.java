@@ -72,10 +72,12 @@ public class Player {
 	}
 
 	public void addCoins(int value) {
+		System.out.println(name + " coins increased from " + coins + " to " + (coins + value));
 		coins += value;
 	}
 
 	public void subtractCoins(int value) {
+		System.out.println(name + " coins decreased from " + coins + " to " + (coins - value));
 		coins -= value;
 	}
 
@@ -84,6 +86,7 @@ public class Player {
 	}
 
 	public void addPoints(int value) {
+		System.out.println(name + " points increased from " + points + " to " + (points + value));
 		points += value;
 	}
 
@@ -136,15 +139,18 @@ public class Player {
 	}
 
 	public void addCrop(String cropName) {
+		System.out.println(name + " adds " + cropName);
 		Crop crop = GameHelper.getCropFromBank(cropName);
 		crops.add(crop);
 	}
 
 	public void addCrop(Crop crop) {
+		System.out.println(name + " adds " + crop.getName());
 		crops.add(crop);
 	}
 
 	public void addQuarry() {
+		System.out.println(name + " adds " + Quarry.NAME);
 		Quarry quarry = GameHelper.getQuarryFromBank();
 		crops.add(quarry);
 	}
@@ -242,6 +248,7 @@ public class Player {
 	}
 	
 	public void addBuilding(int index, Building building) {
+		System.out.println(name + " adds " + building.getName() + " to " + index);
 		buildings.set(index, building);
 	}
 
@@ -277,12 +284,14 @@ public class Player {
 		goods.put(cropName, value);
 	}
 
-	public void addGood(String cropName, int value) {
-		setGood(cropName, goods.get(cropName) + value);
+	public void addGood(String goodName, int value) {
+		System.out.println(name + "'s " + goodName + " increased from " + goods.get(goodName) + " to " + (goods.get(goodName) + value));
+		setGood(goodName, goods.get(goodName) + value);
 	}
 
-	public void subtractGood(String cropName, int value) {
-		setGood(cropName, goods.get(cropName) - value);
+	public void subtractGood(String goodName, int value) {
+		System.out.println(name + "'s " + goodName + " decreased from " + goods.get(goodName) + " to " + (goods.get(goodName) - value));
+		setGood(goodName, goods.get(goodName) - value);
 	}
 
 	public int getNumberOfGoods(String cropName) {
@@ -337,5 +346,9 @@ public class Player {
 	public boolean canBuildLargeBuilding() {
 		return (isBuildingSlotEmpty(1) && (isBuildingSlotEmpty(0) || isBuildingSlotEmpty(2))) || (isBuildingSlotEmpty(4) && (isBuildingSlotEmpty(3) || isBuildingSlotEmpty(5)))
 					|| (isBuildingSlotEmpty(7) && (isBuildingSlotEmpty(6) || isBuildingSlotEmpty(8))) || (isBuildingSlotEmpty(10) && (isBuildingSlotEmpty(9) || isBuildingSlotEmpty(11)));
+	}
+	
+	public boolean hasGood(String goodName) {
+		return goodName != null ? goods.get(goodName) > 0 : false;
 	}
 }

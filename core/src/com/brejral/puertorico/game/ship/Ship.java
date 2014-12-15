@@ -4,7 +4,7 @@ import com.brejral.puertorico.game.GameHelper;
 
 public class Ship {
 	private int goodCapacity, settlers, goods;
-	private String cropName = null;
+	private String goodName = null;
 	
 	
 
@@ -44,17 +44,37 @@ public class Ship {
 		return goodCapacity - goods;
 	}
 
-	public String getCropName() {
-		return cropName;
+	public String getGoodName() {
+		return goodName;
 	}
 
-	public void setCropName(String cropName) {
-		this.cropName = cropName;
+	public void setGoodName(String goodName) {
+		this.goodName = goodName;
+	}
+	
+	public boolean isGood(String goodName) {
+		return this.goodName != null ? this.goodName.equals(goodName) : false;
 	}
 	
 	public void clearGoods() {
-		this.cropName = null;
-		GameHelper.addGoodsToSupply(cropName, goods);
-		this.goods = 0;
+		GameHelper.addGoodsToSupply(goodName, goods);
+		goods = 0;
+		goodName = null;
+	}
+	
+	public boolean isFull() {
+		return goods == goodCapacity;
+	}
+	
+	public boolean isEmpty() {
+		return goods == 0;
+	}
+	
+	public boolean hasOpenSlots() {
+		return goods < goodCapacity;
+	}
+	
+	public boolean hasGoods() {
+		return goods > 0;
 	}
 }

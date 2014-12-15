@@ -237,6 +237,14 @@ public class Bank {
 	public void setPointSupply(int pointSupply) {
 		this.pointSupply = pointSupply;
 	}
+	
+	public void subtractPointsFromSupply(int value) {
+		pointSupply -= value;
+		if (pointSupply < 0) {
+			pointSupply = 0;
+			GameHelper.setLastRound();
+		}
+	}
 
 	public HashMap<String, Integer> getGoodSupply() {
 		return goodSupply;
@@ -294,6 +302,12 @@ public class Bank {
 	
 	public List<Ship> getCargoShips() {
 		return cargoShips;
+	}
+	
+	public void clearCargoShips() {
+		for (Ship ship : cargoShips) {
+			ship.clearGoods();
+		}
 	}
 
 	public Ship getSettlerShip() {

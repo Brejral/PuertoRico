@@ -22,6 +22,7 @@ import javax.swing.border.TitledBorder;
 import com.brejral.puertorico.game.Game;
 import com.brejral.puertorico.game.GameHelper;
 import com.brejral.puertorico.game.building.Building;
+import com.brejral.puertorico.game.building.Wharf;
 import com.brejral.puertorico.game.crop.Coffee;
 import com.brejral.puertorico.game.crop.Corn;
 import com.brejral.puertorico.game.crop.Crop;
@@ -32,6 +33,7 @@ import com.brejral.puertorico.game.crop.Tobacco;
 import com.brejral.puertorico.game.player.Player;
 import com.brejral.puertorico.game.role.Builder;
 import com.brejral.puertorico.game.role.Captain;
+import com.brejral.puertorico.game.role.Craftsman;
 import com.brejral.puertorico.game.role.Mayor;
 import com.brejral.puertorico.game.role.Role;
 import com.brejral.puertorico.game.role.Settler;
@@ -121,10 +123,10 @@ public class DesktopLauncher implements ActionListener {
 			int idx = Integer.parseInt(cmd.substring(11));
 			List<Crop> settlerCrops = GameHelper.getSettlerCropSupply();
 			Crop crop = settlerCrops.get(idx);
-			displayMessage("Crop " + idx + "(" + crop.getName() + ") was choosen");
+			displayMessage("Crop " + idx + "(" + crop.getName() + ") was chosen");
 			((Settler) GameHelper.getCurrentRole()).onCropSelect(crop);
 		} else if (cmd.startsWith("chooseRole")) {
-			displayMessage("Role " + cmd.substring(11) + " was choosen");
+			displayMessage("Role " + cmd.substring(11) + " was chosen");
 			if (cmd.substring(11).equals(Mayor.NAME) && GameHelper.hasRoleBeenSelected()) {
 				((Mayor) GameHelper.getCurrentRole()).onAction();
 			} else if (cmd.substring(11).equals(Trader.NAME) && GameHelper.hasRoleBeenSelected()) {
@@ -135,27 +137,38 @@ public class DesktopLauncher implements ActionListener {
 				GameHelper.selectRoleForPlayer(cmd.substring(11));
 			}
 		} else if (cmd.startsWith("chooseBuilding")) {
-			displayMessage("Building " + cmd.substring(15) + " was choosen");
-			((Builder) GameHelper.getCurrentRole()).onBuildingSelect(cmd.substring(15));
+			displayMessage("Building " + cmd.substring(15) + " was chosen");
+			if (GameHelper.isRole(Captain.NAME)) {
+				((Captain) GameHelper.getCurrentRole()).selectShip(-1);
+			} else {
+				((Builder) GameHelper.getCurrentRole()).onBuildingSelect(cmd.substring(15));
+			}
 		} else if (cmd.startsWith("choosePlayerBuilding")) {
-			displayMessage("Player Building " + cmd.substring(21) + " was choosen");
+			displayMessage("Player Building " + cmd.substring(21) + " was chosen");
 			if (GameHelper.isRole(Builder.NAME)) {
 				((Builder) GameHelper.getCurrentRole()).onLocationSelect(Integer.parseInt(cmd.substring(21)));
 			} else if (GameHelper.isRole(Mayor.NAME)) {
 				((Mayor) GameHelper.getCurrentRole()).addRemoveSettler(true, Integer.parseInt(cmd.substring(21)));
 			}
+		} else if (cmd.startsWith("chooseCargoShip")) {
+			displayMessage("Cargo Ship " + cmd.substring(16) + " was chosen");
+			((Captain) GameHelper.getCurrentRole()).selectShip(Integer.parseInt(cmd.substring(16)));
 		} else if (cmd.startsWith("choosePlayerCrop")) {
-			displayMessage("Player Crop " + cmd.substring(17) + " was choosen");
+			displayMessage("Player Crop " + cmd.substring(17) + " was chosen");
 			if (GameHelper.isRole(Mayor.NAME)) {
 				((Mayor) GameHelper.getCurrentRole()).addRemoveSettler(false, Integer.parseInt(cmd.substring(17)));
 			}
 		} else if (cmd.startsWith("choosePlayerGood")) {
-			displayMessage("Player Good " + cmd.substring(17) + " was choosen");
+			displayMessage("Player Good " + cmd.substring(17) + " was chosen");
 			if (GameHelper.isRole(Trader.NAME)) {
 				((Trader) GameHelper.getCurrentRole()).tradeGood(cmd.substring(17));
+			} else if (GameHelper.isRole(Captain.NAME)) {
+				((Captain) GameHelper.getCurrentRole()).selectGood(cmd.substring(17));
+			} else if (GameHelper.isRole(Craftsman.NAME)) {
+				((Craftsman) GameHelper.getCurrentRole()).onAction(cmd.substring(17));
 			}
 		} else if (cmd.startsWith("chooseQuarry")) {
-			displayMessage("Quarry was choosen");
+			displayMessage("Quarry was chosen");
 			((Settler) GameHelper.getCurrentRole()).onCropSelect(new Quarry());
 		} else if (cmd.equals("disable")) {
 			// b2.setEnabled(false);
@@ -235,7 +248,7 @@ public class DesktopLauncher implements ActionListener {
 			roles[i].setText(roleName + (role != null && role.getBonusCoins() > 0 ? " (" + role.getBonusCoins() + ")" : ""));
 			if (GameHelper.isRole(roleName)) {
 				roles[i].setBackground(Color.GREEN);
-				if (roleName.equals(Mayor.NAME) || roleName.equals(Trader.NAME) || roleName.equals(Builder.NAME)) {
+				if (roleName.equals(Mayor.NAME) || roleName.equals(Trader.NAME) || (roleName.equals(Builder.NAME) && !((Builder)GameHelper.getCurrentRole()).hasSelectedBuilding())) {
 					roles[i].setEnabled(true);
 				}
 			} else {
@@ -334,17 +347,24 @@ public class DesktopLauncher implements ActionListener {
 	private void updateCargoShips() {
 		Role role = GameHelper.getCurrentRole();
 		boolean enabled = false;
-		if (role != null && role.getName().equals(Captain.NAME)) {
+		List<Ship> enabledShips = null;
+		if (role != null && role.getName().equals(Captain.NAME) && !((Captain) role).hasShipBeenSelected()) {
 			enabled = true;
+			enabledShips = ((Captain) role).getShipsPlayerCanSelect();
 		}
 		List<Ship> cargoShipList = GameHelper.getCargoShips();
 		for (int i = 0; i < cargoShipList.size(); i++) {
-			String cargoShipsLabel = "\u25A1";
-			for (int j = 1; j < cargoShipList.get(i).getGoodCapacity(); j++) {
-				cargoShipsLabel += " \u25A1";
+			Ship ship = cargoShipList.get(i);
+			String cargoShipsLabel = "";
+			for (int j = 0; j < ship.getGoodCapacity(); j++) {
+				if (j < ship.getGoods()) {
+					cargoShipsLabel +=  "<font color=" + getColorForCrop(ship.getGoodName()) + "> \u25a0 </font>";
+				} else {
+					cargoShipsLabel += " \u25A1";
+				}
 			}
-			cargoShips[i].setText(cargoShipsLabel);
-			cargoShips[i].setEnabled(enabled);
+			cargoShips[i].setText("<html>" + cargoShipsLabel + "</html>");
+			cargoShips[i].setEnabled(enabled && enabledShips.contains(ship));
 		}
 	}
 
@@ -402,6 +422,10 @@ public class DesktopLauncher implements ActionListener {
 			if (goodsEnabled) {
 				if (GameHelper.isRole(Trader.NAME)) {
 					goodsEnabledList = ((Trader) GameHelper.getCurrentRole()).getTradableGoodsForCurrentPlayer();
+				} else if (GameHelper.isRole(Captain.NAME)) {
+					goodsEnabledList = ((Captain) GameHelper.getCurrentRole()).getGoodsPlayerCanSelect();
+				} else if (GameHelper.isRole(Craftsman.NAME)) {
+					goodsEnabledList = ((Craftsman) GameHelper.getCurrentRole()).getGoodsPlayerCanProduceForBonus();
 				}
 			}
 			playerGoodsCornButton[i].setText(Corn.NAME + " " + player.getNumberOfGoods(Corn.NAME));
@@ -428,12 +452,12 @@ public class DesktopLauncher implements ActionListener {
 						name += building.getSettlers() >= k + 1 ? " \u25A0" : " \u25A1";
 					}
 					playerBuildings[i][j].setText(name);
-					playerBuildings[i][j].setEnabled(player.isAction() && GameHelper.isRole(Mayor.NAME) && (building.getSettlers() > 0 || player.getSettlers() > 0));
+					playerBuildings[i][j].setEnabled(player.isAction() && (GameHelper.isRole(Mayor.NAME) && (building.getSettlers() > 0 || player.getSettlers() > 0))
+								|| (GameHelper.isRole(Captain.NAME) && building.getName().equals(Wharf.NAME)));
 				} else {
 					playerBuildings[i][j].setText("\u25Ac");
 					playerBuildings[i][j].setEnabled(player.isAction() && GameHelper.isRole(Builder.NAME) && ((Builder) GameHelper.getCurrentRole()).canPlayerBuildInLocation(j));
 				}
-
 			}
 
 			// Display the Crops owned by this Player

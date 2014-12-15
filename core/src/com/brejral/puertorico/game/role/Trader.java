@@ -62,7 +62,7 @@ public class Trader extends Role {
 		List<String> cropsToTrade = new ArrayList<String>();
 		Player player = GameHelper.getCurrentPlayerForAction();
 		for (String cropName : Crop.CROP_LIST) {
-			if (player.getNumberOfGoods(cropName) > 0 && (!hasCropBeenTraded(cropName)) || player.hasActiveBuilding(Office.NAME)) {
+			if (player.hasGood(cropName) && (!hasCropBeenTraded(cropName)) || player.hasActiveBuilding(Office.NAME)) {
 				cropsToTrade.add(cropName);
 			}
 		}

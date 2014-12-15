@@ -88,6 +88,11 @@ public class GameHelper {
 		getBank().subtractGoodFromSupply(cropName, useSupplyGoods ? supplyGoods : value);
 		return useSupplyGoods ? supplyGoods : value;
 	}
+	
+	public static void addPointsToPlayerFromSupply(Player player, int value) {
+		player.addPoints(value);
+		getBank().subtractPointsFromSupply(value);
+	}
 
 	public static List<Player> getPlayers() {
 		return getGame().getPlayers();
@@ -146,6 +151,10 @@ public class GameHelper {
 	public static List<Ship> getCargoShips() {
 		return getBank().getCargoShips();
 	}
+	
+	public static void clearCargoShips() {
+		getBank().clearCargoShips();
+	}
 
 	public static List<Building> getBuildingSupply() {
 		return getBank().getBuildingSupply();
@@ -176,6 +185,7 @@ public class GameHelper {
 		Role role = getBank().getRole(roleName);
 		getBank().removeRole(role);
 		getCurrentPlayerForTurn().setRole(role);
+		System.out.println(getCurrentPlayerForTurn().getName() + " selected " + roleName);
 		if (role.getName().equals(Prospector.NAME)) {
 			((Prospector) role).onRoleStart();
 		} else if (role.getName().equals(Builder.NAME)) {
@@ -195,6 +205,7 @@ public class GameHelper {
 
 	public static void resupplySettlerShip(int openSlots) {
 		getBank().resupplySettlerShip(openSlots);
+		System.out.println("Settler Ship resupplied");
 	}
 
 	public static void addGoodsToSupply(String cropName, int value) {
