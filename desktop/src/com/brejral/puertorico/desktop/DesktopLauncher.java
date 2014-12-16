@@ -417,7 +417,7 @@ public class DesktopLauncher implements ActionListener {
 			if (goodsEnabled) {
 				if (GameHelper.isRole(Trader.NAME)) {
 					goodsEnabledList = ((Trader) GameHelper.getCurrentRole()).getTradableGoodsForCurrentPlayer();
-				} else if (GameHelper.isRole(Captain.NAME)) {
+				} else if (GameHelper.isRole(Captain.NAME) && ((Captain) GameHelper.getCurrentRole()).hasShipBeenSelected()) {
 					goodsEnabledList = ((Captain) GameHelper.getCurrentRole()).getGoodsPlayerCanSelect();
 				} else if (GameHelper.isRole(Craftsman.NAME)) {
 					goodsEnabledList = ((Craftsman) GameHelper.getCurrentRole()).getGoodsPlayerCanProduceForBonus();
