@@ -14,7 +14,7 @@ public class Game {
 	private int numberOfPlayers;
 	private Bank bank;
 	private List<Player> players;
-	private boolean isLastRound;
+	private boolean isLastRound = false, isEndOfGame = false;
 
 	public Game(List<Player> players) {
 		numberOfPlayers = players.size();
@@ -71,7 +71,11 @@ public class Game {
 	}
 
 	public void endGame() {
-
+		isEndOfGame = true;
+	}
+	
+	public boolean isEndOfGame() {
+		return isEndOfGame;
 	}
 
 	public void nextRound() {

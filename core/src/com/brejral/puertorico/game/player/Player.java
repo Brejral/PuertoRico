@@ -22,7 +22,7 @@ import com.brejral.puertorico.game.crop.Tobacco;
 import com.brejral.puertorico.game.role.Role;
 import com.brejral.puertorico.user.User;
 
-public class Player {
+public class Player implements Comparable<Player> {
 	private User user;
 	private String name;
 	private Role role;
@@ -267,7 +267,7 @@ public class Player {
 		for (String cropName : Crop.CROP_LIST) {
 			int settledCrops = getNumberOfSettledCrops(cropName);
 			int productionSettlers = getNumberProductionSettlersForCrop(cropName);
-			if (Corn.NAME.equals(cropName)) {
+			if (cropName.equals(Corn.NAME)) {
 				goods.put(cropName, settledCrops);
 			} else {
 				goods.put(cropName, Math.min(settledCrops, productionSettlers));
@@ -350,5 +350,10 @@ public class Player {
 	
 	public boolean hasGood(String goodName) {
 		return goodName != null ? goods.get(goodName) > 0 : false;
+	}
+
+	@Override
+	public int compareTo(Player player) {
+		return player.getTotalPoints() - this.getTotalPoints();
 	}
 }

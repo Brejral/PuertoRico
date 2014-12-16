@@ -21,7 +21,7 @@ public class Craftsman extends Role {
 		produceCropsForPlayers();
 		List<String> goodChoices = getGoodsPlayerCanProduceForBonus();
 		if (goodChoices.size() < 2) {
-			onAction(goodChoices.size() == 0 ? null : goodChoices.get(0));
+			onGoodSelect(goodChoices.size() == 0 ? null : goodChoices.get(0));
 		}
 	}
 
@@ -29,7 +29,7 @@ public class Craftsman extends Role {
 	 * This only action taken for the craftsman is to select the extra good to produce
 	 * @param crop
 	 */
-	public void onAction(String cropName) {
+	public void onGoodSelect(String cropName) {
 		if (cropName != null) {
 			Player player = GameHelper.getCurrentPlayerForTurn();
 			GameHelper.addGoodsToPlayerFromSupply(player, cropName, 1);
@@ -40,13 +40,13 @@ public class Craftsman extends Role {
 	public List<String> getGoodsPlayerCanProduceForBonus() {
 		Player player = GameHelper.getCurrentPlayerForTurn();
 		HashMap<String, Integer> goodsToProduce = player.getGoodsPlayerCanProduce();
-		List<String> cropList = new ArrayList<String>();
-		for (String cropName : Crop.CROP_LIST) {
-			if (goodsToProduce.get(cropName) > 0 && GameHelper.getGoodSupply(cropName) > 0) {
-				cropList.add(cropName);
+		List<String> goodList = new ArrayList<String>();
+		for (String goodName : Crop.CROP_LIST) {
+			if (goodsToProduce.get(goodName) > 0 && GameHelper.getGoodSupply(goodName) > 0) {
+				goodList.add(goodName);
 			}
 		}
-		return cropList;
+		return goodList;
 	}
 
 	public void produceCropsForPlayers() {

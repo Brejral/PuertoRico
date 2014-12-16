@@ -20,6 +20,9 @@ public class Trader extends Role {
 
 	public void onRoleStart() {
 		super.onRoleStart();
+		if (getTradableGoodsForCurrentPlayer().size() == 0) {
+			tradeGood("None");
+		}
 	}
 
 	public void tradeGood(String cropName) {
@@ -37,6 +40,7 @@ public class Trader extends Role {
 		if (tradedGoods.size() == 4 || isEndOfRound()) {
 			onRoleEnd();
 		} else {
+			super.onAction();
 			while (getTradableGoodsForCurrentPlayer().size() == 0) {
 				if (isEndOfRound()) {
 					onRoleEnd();

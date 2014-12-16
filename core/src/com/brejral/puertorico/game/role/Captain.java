@@ -31,7 +31,7 @@ public class Captain extends Role {
 		this.shipIndex = shipIndex;
 		Ship selectedShip = shipIndex > -1 ? GameHelper.getCargoShips().get(shipIndex) : null;
 		List<String> goodOptions = getGoodsPlayerCanSelect();
-		if ((selectedShip != null && selectedShip.hasGoods()) || goodOptions.size() == 1) {
+ 		if ((selectedShip != null && selectedShip.hasGoods()) || goodOptions.size() == 1) {
 			selectGood(selectedShip.hasGoods() ? selectedShip.getGoodName() : goodOptions.get(0));
 		}
 	}

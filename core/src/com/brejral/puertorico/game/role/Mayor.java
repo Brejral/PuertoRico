@@ -86,4 +86,22 @@ public class Mayor extends Role {
 		GameHelper.resupplySettlerShip(openSlotCount);
 		super.onRoleEnd();
 	}
+	
+	public boolean isActionComplete() {
+		Player player = GameHelper.getCurrentPlayerForAction();
+		if (player.getSettlers() == 0) {
+			return true;
+		}
+		for (Crop crop : player.getCrops()) {
+			if (!crop.isSettled()) {
+				return false;
+			}
+		}
+		for (Building building : player.getBuildings()) {
+			if (building != null && building.getSettlerSlots() != building.getSettlers()) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

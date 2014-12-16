@@ -4,9 +4,13 @@ import com.brejral.puertorico.game.player.Player;
 
 public class CityHall extends Building {
 	public static final String NAME = "City Hall";
+	public static final String TOOLTIP = "<html><b>" + NAME + "</b><br>"
+				+ "<b>Cost:</b> 10 <b>Points:</b> 4<br>"
+				+ "1 victory point for each violet building<br>"
+				+ "(game end)</html>";
 
 	public CityHall() {
-		super(NAME);
+		super(NAME, TOOLTIP);
 		setPrice(10);
 		setPoints(4);
 		setSize(2);

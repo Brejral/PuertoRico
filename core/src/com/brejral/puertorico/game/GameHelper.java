@@ -1,6 +1,7 @@
 package com.brejral.puertorico.game;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -96,6 +97,12 @@ public class GameHelper {
 
 	public static List<Player> getPlayers() {
 		return getGame().getPlayers();
+	}
+	
+	public static List<Player> getStandings() {
+		List<Player> players = getPlayers();
+		Collections.sort(players);
+		return players;
 	}
 
 	public static Bank getBank() {
@@ -236,6 +243,10 @@ public class GameHelper {
 	public static void setLastRound() {
 		getGame().setLastRound();
 	}
+	
+	public static boolean isEndOfGame() {
+		return getGame().isEndOfGame();
+	}
 
 	// Moves the governor position
 	public static void nextRound() {
@@ -328,5 +339,19 @@ public class GameHelper {
 			}
 		}
 		return ((Trader) getRole(Trader.NAME)).getTradedGoods();
+	}
+	
+	public static String getTooltipOfBuilding(String buildingName) {
+		Building building = getBuildingFromSupply(buildingName);
+		if (building != null) {
+			return building.getTooltip();
+		}
+		for (Player player : getPlayers()) {
+			List<Building> buildingList = player.getBuildings(buildingName);
+			if (buildingList.size() > 0) {
+				return buildingList.get(0).getTooltip();
+			}
+		}
+		return null;
 	}
 }

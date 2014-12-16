@@ -165,7 +165,7 @@ public class DesktopLauncher implements ActionListener {
 			} else if (GameHelper.isRole(Captain.NAME)) {
 				((Captain) GameHelper.getCurrentRole()).selectGood(cmd.substring(17));
 			} else if (GameHelper.isRole(Craftsman.NAME)) {
-				((Craftsman) GameHelper.getCurrentRole()).onAction(cmd.substring(17));
+				((Craftsman) GameHelper.getCurrentRole()).onGoodSelect(cmd.substring(17));
 			}
 		} else if (cmd.startsWith("chooseQuarry")) {
 			displayMessage("Quarry was chosen");
@@ -219,11 +219,6 @@ public class DesktopLauncher implements ActionListener {
 	}
 
 	/* ********************************************************************************************** */
-	private int showGoodSelectionWindow(List<String> cropOptions, String message) {
-		return JOptionPane.showOptionDialog(mainFrame, message, "Select Good", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, cropOptions.toArray(), null);
-	}
-
-	/* ********************************************************************************************** */
 	private void updateAll() {
 		updateRoles();
 		updateSupplies();
@@ -234,7 +229,7 @@ public class DesktopLauncher implements ActionListener {
 		updateCargoShips();
 		updateTradingHouse();
 		updatePlayers();
-		// checkForGoodSelection();
+		checkForEndOfGame();
 	}
 
 	/* ********************************************************************************************** */
@@ -245,10 +240,10 @@ public class DesktopLauncher implements ActionListener {
 			String roleName = roleList.get(i);
 			Role role = GameHelper.getRole(roleName);
 			roles[i].setEnabled(setEnabled && GameHelper.isRoleAvailable(roleName));
-			roles[i].setText(roleName + (role != null && role.getBonusCoins() > 0 ? " (" + role.getBonusCoins() + ")" : ""));
+			roles[i].setText(roleName + (role != null && role.getBonusCoins() > 0 ? " (+" + role.getBonusCoins() + ")" : ""));
 			if (GameHelper.isRole(roleName)) {
 				roles[i].setBackground(Color.GREEN);
-				if (roleName.equals(Mayor.NAME) || roleName.equals(Trader.NAME) || (roleName.equals(Builder.NAME) && !((Builder)GameHelper.getCurrentRole()).hasSelectedBuilding())) {
+				if ((roleName.equals(Mayor.NAME) && ((Mayor) GameHelper.getCurrentRole()).isActionComplete()) || roleName.equals(Trader.NAME) || (roleName.equals(Builder.NAME) && !((Builder) GameHelper.getCurrentRole()).hasSelectedBuilding())) {
 					roles[i].setEnabled(true);
 				}
 			} else {
@@ -334,7 +329,7 @@ public class DesktopLauncher implements ActionListener {
 			settlerCrops[i].setText(name);
 			settlerCrops[i].setEnabled(enabled && !name.equals("\u25Ac"));
 		}
-		settlerCrops[settlerCropSupply.size()].setEnabled(enabled && ((Settler) role).canChooseQuarry(GameHelper.getCurrentPlayerForAction()));
+		settlerCrops[GameHelper.getNumberOfSettlerCropSupply()].setEnabled(enabled && ((Settler) role).canChooseQuarry(GameHelper.getCurrentPlayerForAction()));
 		settlerCropsPanel.setEnabled(enabled);
 	}
 
@@ -358,7 +353,7 @@ public class DesktopLauncher implements ActionListener {
 			String cargoShipsLabel = "";
 			for (int j = 0; j < ship.getGoodCapacity(); j++) {
 				if (j < ship.getGoods()) {
-					cargoShipsLabel +=  "<font color=" + getColorForCrop(ship.getGoodName()) + "> \u25a0 </font>";
+					cargoShipsLabel += "<font color=" + getColorForCrop(ship.getGoodName()) + "> \u25a0 </font>";
 				} else {
 					cargoShipsLabel += " \u25A1";
 				}
@@ -417,7 +412,7 @@ public class DesktopLauncher implements ActionListener {
 			int supplySettlers = player.getSettlers();
 			playerSettlersLabel[i].setText(Integer.toString(supplySettlers));
 
-			boolean goodsEnabled = player.isAction() && GameHelper.isRole(Trader.NAME);
+			boolean goodsEnabled = player.isAction() && (GameHelper.isRole(Trader.NAME) || GameHelper.isRole(Captain.NAME) || GameHelper.isRole(Craftsman.NAME));
 			List<String> goodsEnabledList = null;
 			if (goodsEnabled) {
 				if (GameHelper.isRole(Trader.NAME)) {
@@ -452,8 +447,7 @@ public class DesktopLauncher implements ActionListener {
 						name += building.getSettlers() >= k + 1 ? " \u25A0" : " \u25A1";
 					}
 					playerBuildings[i][j].setText(name);
-					playerBuildings[i][j].setEnabled(player.isAction() && (GameHelper.isRole(Mayor.NAME) && (building.getSettlers() > 0 || player.getSettlers() > 0))
-								|| (GameHelper.isRole(Captain.NAME) && building.getName().equals(Wharf.NAME)));
+					playerBuildings[i][j].setEnabled(player.isAction() && (GameHelper.isRole(Mayor.NAME) && (building.getSettlers() > 0 || player.getSettlers() > 0)) || (GameHelper.isRole(Captain.NAME) && building.getName().equals(Wharf.NAME)));
 				} else {
 					playerBuildings[i][j].setText("\u25Ac");
 					playerBuildings[i][j].setEnabled(player.isAction() && GameHelper.isRole(Builder.NAME) && ((Builder) GameHelper.getCurrentRole()).canPlayerBuildInLocation(j));
@@ -476,25 +470,17 @@ public class DesktopLauncher implements ActionListener {
 		}
 	}
 
-	/* ********************************************************************************************** */
-	// private void checkForGoodSelection() {
-	// if (GameHelper.isRole(Trader.NAME)) {
-	// Trader trader = ((Trader) GameHelper.getCurrentRole());
-	// List<String> options = trader.getTradableGoodsForCurrentPlayer();
-	// String selectedCrop = "";
-	// if (options.size() > 0) {
-	// options.add("None");
-	// int selection = showGoodSelectionWindow(options, "Select a good to trade.");
-	// selectedCrop = options.get(selection);
-	// } else {
-	// selectedCrop = "None";
-	// }
-	// trader.tradeGood(selectedCrop);
-	// updateAll();
-	// } else if (GameHelper.isRole(Captain.NAME)) {
-	//
-	// }
-	// }
+	private void checkForEndOfGame() {
+		if (GameHelper.isEndOfGame()) {
+			String message = "<html>";
+			int i = 1;
+			for (Player player : GameHelper.getStandings()) {
+				message += i + ". " + player.getName() + ". Points: " + player.getTotalPoints() + "<br>";
+			}
+			message += "</html>";
+			JOptionPane.showMessageDialog(mainFrame, message, "Final Standings", JOptionPane.OK_OPTION);
+		}
+	}
 
 	/* ********************************************************************************************** */
 	// private void createPlayerPanel(JPanel panel, int idx) {
@@ -670,6 +656,7 @@ public class DesktopLauncher implements ActionListener {
 			int cnt = GameHelper.getBuildingSupplyCount(buildingName);
 			String label = buildingName + " (" + cnt + ")";
 			buildings[idx] = createButton(buildingsPanel, label, "chooseBuilding " + buildingName);
+			buildings[idx].setToolTipText(GameHelper.getTooltipOfBuilding(buildingName));
 			idx++;
 		}
 		mainPanel.add(buildingsPanel);
@@ -774,7 +761,7 @@ public class DesktopLauncher implements ActionListener {
 		// Tim LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		// Tim new LwjglApplication(new PuertoRico(), config);
 		List<Player> players = new ArrayList<Player>();
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 3; i++) {
 			players.add(new Player("Player " + (i + 1)));
 		}
 		new Game(players);

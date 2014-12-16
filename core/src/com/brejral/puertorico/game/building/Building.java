@@ -5,17 +5,27 @@ import com.brejral.puertorico.game.player.Player;
 public class Building {
 	public static final String[] BUILDING_LIST = { "Small Indigo Plant", "Small Sugar Mill", "Small Market", "Hacienda", "Construction Hut", "Small Warehouse", "Indigo Plant", "Sugar Mill", "Hospice", "Office", "Large Market", "Large Warehouse",
 				"Tobacco Storage", "Coffee Roaster", "Factory", "University", "Harbor", "Wharf", "Guild Hall", "Residence", "Fortress", "City Hall", "Customs House" };
-	private String name;
+	private String name, tooltip;
 	private int size = 1, settlerSlots = 1, settlers, price, points;
 	private boolean isProduction = false, isRemovingSettler = false;
 	private String crop;
 
 	public Building(String nm) {
 		this.name = nm;
+		this.tooltip = "";
+	}
+	
+	public Building(String nm, String tooltip) {
+		this.name = nm;
+		this.tooltip = tooltip;
 	}
 
 	public String getName() {
 		return name;
+	}
+	
+	public String getTooltip() {
+		return tooltip;
 	}
 
 	protected void setIsProduction(boolean value) {
