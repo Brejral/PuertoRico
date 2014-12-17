@@ -10,11 +10,6 @@ public class Building {
 	private boolean isProduction = false, isRemovingSettler = false;
 	private String crop;
 
-	public Building(String nm) {
-		this.name = nm;
-		this.tooltip = "";
-	}
-	
 	public Building(String nm, String tooltip) {
 		this.name = nm;
 		this.tooltip = tooltip;

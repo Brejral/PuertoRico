@@ -55,7 +55,7 @@ public class Ship {
 	}
 
 	public void clearGoods() {
-		if (goodName != null) {
+		if (goodName != null && isFull()) {
 			GameHelper.addGoodsToSupply(goodName, goods);
 			goods = 0;
 			goodName = null;
@@ -76,5 +76,9 @@ public class Ship {
 
 	public boolean hasGoods() {
 		return goods > 0;
+	}
+	
+	public String getCargoTooltip() {
+		return (goodName != null ? goodName  + " " : "") + goods + "/" + goodCapacity;
 	}
 }

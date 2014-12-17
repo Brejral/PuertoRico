@@ -82,12 +82,17 @@ public class GameHelper {
 		player.subtractCoins(value);
 	}
 
-	public static int addGoodsToPlayerFromSupply(Player player, String cropName, int value) {
-		int supplyGoods = getBank().getGoodSupply().get(cropName);
-		boolean useSupplyGoods = supplyGoods < value;
-		player.addGood(cropName, useSupplyGoods ? supplyGoods : value);
-		getBank().subtractGoodFromSupply(cropName, useSupplyGoods ? supplyGoods : value);
-		return useSupplyGoods ? supplyGoods : value;
+	public static int addGoodsToPlayerFromSupply(Player player, String goodName, int value) {
+		int supplyGoods = getBank().getGoodSupply().get(goodName);
+		int addedGoods = supplyGoods < value ? supplyGoods : value;
+		player.addGood(goodName, addedGoods);
+		getBank().subtractGoodFromSupply(goodName, addedGoods);
+		return addedGoods;
+	}
+	
+	public static void addGoodsToSupplyFromPlayer(Player player, String goodName, int value) {
+		player.subtractGood(goodName, value);
+		getBank().addGoodToSupply(goodName, value);
 	}
 	
 	public static void addPointsToPlayerFromSupply(Player player, int value) {
@@ -219,7 +224,7 @@ public class GameHelper {
 		getBank().addGoodToSupply(cropName, value);
 	}
 
-	public static void subtractGoodSupply(String cropName, int value) {
+	public static void subtractGoodFromSupply(String cropName, int value) {
 		getBank().subtractGoodFromSupply(cropName, value);
 	}
 

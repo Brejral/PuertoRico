@@ -22,6 +22,8 @@ import javax.swing.border.TitledBorder;
 import com.brejral.puertorico.game.Game;
 import com.brejral.puertorico.game.GameHelper;
 import com.brejral.puertorico.game.building.Building;
+import com.brejral.puertorico.game.building.LargeWarehouse;
+import com.brejral.puertorico.game.building.SmallWarehouse;
 import com.brejral.puertorico.game.building.Wharf;
 import com.brejral.puertorico.game.crop.Coffee;
 import com.brejral.puertorico.game.crop.Corn;
@@ -44,6 +46,8 @@ import com.brejral.puertorico.game.ship.Ship;
 // Tim import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
 public class DesktopLauncher implements ActionListener {
+
+	private static boolean IS_DEBUG = false;
 
 	/* ********************************************************************************************** */
 	// Global GUI items
@@ -163,7 +167,12 @@ public class DesktopLauncher implements ActionListener {
 			if (GameHelper.isRole(Trader.NAME)) {
 				((Trader) GameHelper.getCurrentRole()).tradeGood(cmd.substring(17));
 			} else if (GameHelper.isRole(Captain.NAME)) {
-				((Captain) GameHelper.getCurrentRole()).selectGood(cmd.substring(17));
+				if (((Captain) GameHelper.getCurrentRole()).isDoneShipping()) {
+					((Captain) GameHelper.getCurrentRole()).selectGoodToStore(cmd.substring(17));
+				} else {
+					((Captain) GameHelper.getCurrentRole()).selectGoodToShip(cmd.substring(17));
+				}
+
 			} else if (GameHelper.isRole(Craftsman.NAME)) {
 				((Craftsman) GameHelper.getCurrentRole()).onGoodSelect(cmd.substring(17));
 			}
@@ -220,6 +229,7 @@ public class DesktopLauncher implements ActionListener {
 
 	/* ********************************************************************************************** */
 	private void updateAll() {
+		checkForEndOfGame();
 		updateRoles();
 		updateSupplies();
 		updateGoods();
@@ -229,7 +239,6 @@ public class DesktopLauncher implements ActionListener {
 		updateCargoShips();
 		updateTradingHouse();
 		updatePlayers();
-		checkForEndOfGame();
 	}
 
 	/* ********************************************************************************************** */
@@ -360,6 +369,7 @@ public class DesktopLauncher implements ActionListener {
 			}
 			cargoShips[i].setText("<html>" + cargoShipsLabel + "</html>");
 			cargoShips[i].setEnabled(enabled && enabledShips.contains(ship));
+			cargoShips[i].setToolTipText(ship.getCargoTooltip());
 		}
 	}
 
@@ -417,22 +427,26 @@ public class DesktopLauncher implements ActionListener {
 			if (goodsEnabled) {
 				if (GameHelper.isRole(Trader.NAME)) {
 					goodsEnabledList = ((Trader) GameHelper.getCurrentRole()).getTradableGoodsForCurrentPlayer();
-				} else if (GameHelper.isRole(Captain.NAME) && ((Captain) GameHelper.getCurrentRole()).hasShipBeenSelected()) {
-					goodsEnabledList = ((Captain) GameHelper.getCurrentRole()).getGoodsPlayerCanSelect();
+				} else if (GameHelper.isRole(Captain.NAME)) {
+					if (((Captain) GameHelper.getCurrentRole()).hasShipBeenSelected()) {
+						goodsEnabledList = ((Captain) GameHelper.getCurrentRole()).getGoodsPlayerCanSelect();
+					} else if (((Captain) GameHelper.getCurrentRole()).isDoneShipping()) {
+						goodsEnabledList = ((Captain) GameHelper.getCurrentRole()).getGoodsToStore();
+					}
 				} else if (GameHelper.isRole(Craftsman.NAME)) {
 					goodsEnabledList = ((Craftsman) GameHelper.getCurrentRole()).getGoodsPlayerCanProduceForBonus();
 				}
 			}
 			playerGoodsCornButton[i].setText(Corn.NAME + " " + player.getNumberOfGoods(Corn.NAME));
-			playerGoodsCornButton[i].setEnabled(goodsEnabled && goodsEnabledList.contains(Corn.NAME));
+			playerGoodsCornButton[i].setEnabled(goodsEnabled && goodsEnabledList != null && goodsEnabledList.contains(Corn.NAME));
 			playerGoodsIndigoButton[i].setText(Indigo.NAME + " " + player.getNumberOfGoods(Indigo.NAME));
-			playerGoodsIndigoButton[i].setEnabled(goodsEnabled && goodsEnabledList.contains(Indigo.NAME));
+			playerGoodsIndigoButton[i].setEnabled(goodsEnabled && goodsEnabledList != null && goodsEnabledList.contains(Indigo.NAME));
 			playerGoodsSugarButton[i].setText(Sugar.NAME + " " + player.getNumberOfGoods(Sugar.NAME));
-			playerGoodsSugarButton[i].setEnabled(goodsEnabled && goodsEnabledList.contains(Sugar.NAME));
+			playerGoodsSugarButton[i].setEnabled(goodsEnabled && goodsEnabledList != null && goodsEnabledList.contains(Sugar.NAME));
 			playerGoodsTobaccoButton[i].setText(Tobacco.NAME + " " + player.getNumberOfGoods(Tobacco.NAME));
-			playerGoodsTobaccoButton[i].setEnabled(goodsEnabled && goodsEnabledList.contains(Tobacco.NAME));
+			playerGoodsTobaccoButton[i].setEnabled(goodsEnabled && goodsEnabledList != null && goodsEnabledList.contains(Tobacco.NAME));
 			playerGoodsCoffeeButton[i].setText(Coffee.NAME + " " + player.getNumberOfGoods(Coffee.NAME));
-			playerGoodsCoffeeButton[i].setEnabled(goodsEnabled && goodsEnabledList.contains(Coffee.NAME));
+			playerGoodsCoffeeButton[i].setEnabled(goodsEnabled && goodsEnabledList != null && goodsEnabledList.contains(Coffee.NAME));
 
 			// List<Quarry> supplyGoodsQuarryList = GameHelper.getBank().getQuarrySupply();
 			// playerGoodsQuarryLabel[i].setText(Integer.toString(supplyGoodsQuarryList.size()));
@@ -448,6 +462,11 @@ public class DesktopLauncher implements ActionListener {
 					}
 					playerBuildings[i][j].setText(name);
 					playerBuildings[i][j].setEnabled(player.isAction() && (GameHelper.isRole(Mayor.NAME) && (building.getSettlers() > 0 || player.getSettlers() > 0)) || (GameHelper.isRole(Captain.NAME) && building.getName().equals(Wharf.NAME)));
+					if (GameHelper.isRole(Captain.NAME) && ((Captain) GameHelper.getCurrentRole()).isDoneShipping() && ((Captain) GameHelper.getCurrentRole()).getOpenWarehouse() != null && ((Captain) GameHelper.getCurrentRole()).getOpenWarehouse().equals(building)) {
+						playerBuildings[i][j].setBackground(Color.GREEN);
+					} else {
+						playerBuildings[i][j].setBackground(null);
+					}
 				} else {
 					playerBuildings[i][j].setText("\u25Ac");
 					playerBuildings[i][j].setEnabled(player.isAction() && GameHelper.isRole(Builder.NAME) && ((Builder) GameHelper.getCurrentRole()).canPlayerBuildInLocation(j));
@@ -765,6 +784,27 @@ public class DesktopLauncher implements ActionListener {
 			players.add(new Player("Player " + (i + 1)));
 		}
 		new Game(players);
+
+		if (IS_DEBUG) {
+			List<Player> playerList = GameHelper.getPlayers();
+			playerList.get(0).addGood(Indigo.NAME, 3);
+			playerList.get(0).addGood(Sugar.NAME, 2);
+			playerList.get(0).addGood(Coffee.NAME, 1);
+			playerList.get(1).addGood(Sugar.NAME, 4);
+			playerList.get(1).addGood(Corn.NAME, 2);
+			playerList.get(1).addGood(Tobacco.NAME, 1);
+			playerList.get(2).addGood(Indigo.NAME, 4);
+			playerList.get(2).addGood(Sugar.NAME, 3);
+			playerList.get(2).addGood(Corn.NAME, 2);
+			SmallWarehouse sWarehouse = new SmallWarehouse();
+			sWarehouse.addSettlers(1);
+			LargeWarehouse lWarehouse = new LargeWarehouse();
+			lWarehouse.addSettlers(1);
+			playerList.get(0).addBuilding(0, sWarehouse);
+			playerList.get(1).addBuilding(0, lWarehouse);
+			playerList.get(2).addBuilding(0, sWarehouse);
+			GameHelper.getBank().setSettlerSupply(0);
+		}
 
 		new DesktopLauncher();
 	}

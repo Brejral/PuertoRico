@@ -288,7 +288,7 @@ public class Bank {
 
 	public void resupplySettlerShip(int openSlots) {
 		int resupply = 0;
-		if (openSlots > settlerSupply) {
+		if ((openSlots < GameHelper.getNumberOfPlayers() && GameHelper.getNumberOfPlayers() > settlerSupply) || openSlots > settlerSupply) {
 			GameHelper.setLastRound();
 			resupply = settlerSupply;
 		} else if (openSlots < GameHelper.getNumberOfPlayers()) {

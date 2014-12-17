@@ -294,8 +294,8 @@ public class Player implements Comparable<Player> {
 		setGood(goodName, goods.get(goodName) - value);
 	}
 
-	public int getNumberOfGoods(String cropName) {
-		return goods.get(cropName);
+	public int getNumberOfGoods(String goodName) {
+		return goods.get(goodName);
 	}
 
 	public int getTotalPoints() {
