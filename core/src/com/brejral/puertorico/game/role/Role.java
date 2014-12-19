@@ -4,14 +4,19 @@ import com.brejral.puertorico.game.GameHelper;
 
 public class Role {
 	protected int bonusCoins;
-	private String name;
+	private String name, tooltip;
 
-	public Role(String name) {
+	public Role(String name, String tooltip) {
 		this.name = name;
+		this.tooltip = tooltip;
 	}
 
 	public String getName() {
 		return name;
+	}
+	
+	public String getTooltip() {
+		return tooltip;
 	}
 
 	public void addBonusCoin() {

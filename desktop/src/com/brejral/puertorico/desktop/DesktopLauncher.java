@@ -461,6 +461,7 @@ public class DesktopLauncher implements ActionListener {
 						name += building.getSettlers() >= k + 1 ? " \u25A0" : " \u25A1";
 					}
 					playerBuildings[i][j].setText(name);
+					playerBuildings[i][j].setToolTipText(building.getTooltip());
 					playerBuildings[i][j].setEnabled(player.isAction() && (GameHelper.isRole(Mayor.NAME) && (building.getSettlers() > 0 || player.getSettlers() > 0)) || (GameHelper.isRole(Captain.NAME) && building.getName().equals(Wharf.NAME)));
 					if (GameHelper.isRole(Captain.NAME) && ((Captain) GameHelper.getCurrentRole()).isDoneShipping() && ((Captain) GameHelper.getCurrentRole()).getOpenWarehouse() != null && ((Captain) GameHelper.getCurrentRole()).getOpenWarehouse().equals(building)) {
 						playerBuildings[i][j].setBackground(Color.GREEN);
@@ -638,6 +639,7 @@ public class DesktopLauncher implements ActionListener {
 		for (int i = 0; i < rolesList.size(); i++) {
 			String name = rolesList.get(i);
 			roles[i] = createButton(rolesPanel, name, "chooseRole " + name);
+			roles[i].setToolTipText(GameHelper.getRole(name).getTooltip());
 		}
 		mainPanel.add(rolesPanel);
 

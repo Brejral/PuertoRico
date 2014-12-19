@@ -12,10 +12,13 @@ import com.brejral.puertorico.game.player.Player;
 
 public class Trader extends Role {
 	public static final String NAME = "Trader";
-	private List<String> tradedGoods = new ArrayList<String>(4);
+	public static final String TOOLTIP = "<html><b>" + NAME + "</b><br><b>Action: </b>"
+				+ "In clockwise order, players can sell a good at the trading house.<br>"
+				+ "<b>Privilege: </b>With a sale, the trader takes one more doubloon than allowed.</html>";
+		private List<String> tradedGoods = new ArrayList<String>(4);
 
 	public Trader() {
-		super(NAME);
+		super(NAME, TOOLTIP);
 	}
 
 	public void onRoleStart() {

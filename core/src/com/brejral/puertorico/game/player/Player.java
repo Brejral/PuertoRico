@@ -166,7 +166,7 @@ public class Player implements Comparable<Player> {
 	public void clearRole() {
 		setRole(null);
 	}
-	
+
 	public boolean isRole(String roleName) {
 		return role != null ? role.getName().equals(roleName) : false;
 	}
@@ -246,17 +246,20 @@ public class Player implements Comparable<Player> {
 	public List<Building> getBuildings() {
 		return buildings;
 	}
-	
+
 	public void addBuilding(int index, Building building) {
 		System.out.println(name + " adds " + building.getName() + " to " + index);
 		buildings.set(index, building);
+		if (isBuildingSpaceFull()) {
+			GameHelper.setLastRound();
+		}
 	}
 
 	public int getOpenBuildingSlots() {
 		int openSlots = 0;
 		for (Building building : getBuildings()) {
 			if (building != null) {
-			openSlots += building.getOpenSlots();
+				openSlots += building.getOpenSlots();
 			}
 		}
 		return openSlots;
@@ -301,9 +304,11 @@ public class Player implements Comparable<Player> {
 	public int getTotalPoints() {
 		int totalPoints = points;
 		for (Building building : buildings) {
-			totalPoints += building.getPoints();
-			if (building.isGameEndUtility() && building.isActive()) {
-				totalPoints += building.getGameEndPoints(this);
+			if (building != null) {
+				totalPoints += building.getPoints();
+				if (building.isGameEndUtility() && building.isActive()) {
+					totalPoints += building.getGameEndPoints(this);
+				}
 			}
 		}
 		return totalPoints;
@@ -316,7 +321,7 @@ public class Player implements Comparable<Player> {
 	public void addSettlers(int value) {
 		this.settlers += value;
 	}
-	
+
 	public void subtractSettlers(int value) {
 		this.settlers -= value;
 	}
@@ -328,7 +333,7 @@ public class Player implements Comparable<Player> {
 	public int getPriceOfBuildingForPlayer(String buildingName) {
 		return getPriceOfBuildingForPlayer(GameHelper.getBuildingFromSupply(buildingName));
 	}
-	
+
 	public int getPriceOfBuildingForPlayer(Building building) {
 		int price = building.getPrice();
 		int discount = Math.min(getNumberOfSettledCrops(Quarry.NAME), building.getPoints()) + (isTurn ? 1 : 0);
@@ -347,7 +352,7 @@ public class Player implements Comparable<Player> {
 		return (isBuildingSlotEmpty(1) && (isBuildingSlotEmpty(0) || isBuildingSlotEmpty(2))) || (isBuildingSlotEmpty(4) && (isBuildingSlotEmpty(3) || isBuildingSlotEmpty(5)))
 					|| (isBuildingSlotEmpty(7) && (isBuildingSlotEmpty(6) || isBuildingSlotEmpty(8))) || (isBuildingSlotEmpty(10) && (isBuildingSlotEmpty(9) || isBuildingSlotEmpty(11)));
 	}
-	
+
 	public boolean hasGood(String goodName) {
 		return goodName != null ? goods.get(goodName) > 0 : false;
 	}
@@ -355,5 +360,18 @@ public class Player implements Comparable<Player> {
 	@Override
 	public int compareTo(Player player) {
 		return player.getTotalPoints() - this.getTotalPoints();
+	}
+	
+	private boolean isBuildingSpaceFull() {
+		for (int i = 0; i < getBuildings().size(); i++) {
+			Building building = getBuildings().get(i);
+			if (building == null) {
+				return false;
+			}
+			if (building.getSize() == 2) {
+				i++;
+			}
+		}
+		return true;
 	}
 }

@@ -11,9 +11,12 @@ import com.brejral.puertorico.game.ship.Ship;
 
 public class Mayor extends Role {
 	public static final String NAME = "Mayor";
+	public static final String TOOLTIP = "<html><b>" + NAME + "</b><br><b>Action: </b>"
+				+ "In clockwise order, players get colonists; all colonists may be placed new.<br>"
+				+ "<b>Privilege: </b>The mayor takes one additional colonist fromthe supply.</html>";
 	
 	public Mayor() {
-		super(NAME);
+		super(NAME, TOOLTIP);
 	}
 
 	public void onRoleStart() {

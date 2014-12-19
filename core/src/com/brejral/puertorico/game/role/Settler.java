@@ -9,9 +9,12 @@ import com.brejral.puertorico.game.player.Player;
 
 public class Settler extends Role {
 	public static final String NAME = "Settler";
-	
+	public static final String TOOLTIP = "<html><b>" + NAME + "</b><br><b>Action: </b>"
+				+ "In clockwise order, players take a plantation from the supply.<br>"
+				+ "<b>Privilege: </b>The settler can take one quarry instead.</html>";
+		
 	public Settler() {
-		super(NAME);
+		super(NAME, TOOLTIP);
 	}
 	
 	public void onRoleStart() {

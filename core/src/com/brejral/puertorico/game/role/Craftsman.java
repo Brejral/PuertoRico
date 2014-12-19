@@ -11,9 +11,12 @@ import com.brejral.puertorico.game.player.Player;
 
 public class Craftsman extends Role {
 	public static final String NAME = "Craftsman";
-
+	public static final String TOOLTIP = "<html><b>" + NAME + "</b><br><b>Action: </b>"
+				+ "In clockwise order, players take their products from the supply.<br>"
+				+ "<b>Privilege: </b>The craftsman takes one additional good.</html>";
+	
 	public Craftsman() {
-		super(NAME);
+		super(NAME, TOOLTIP);
 	}
 
 	public void onRoleStart() {

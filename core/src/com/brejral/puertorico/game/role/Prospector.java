@@ -5,9 +5,12 @@ import com.brejral.puertorico.game.player.Player;
 
 public class Prospector extends Role {
 	public static final String NAME = "Prospector";
-	
+	public static final String TOOLTIP = "<html><b>" + NAME + "</b><br><b>Action: </b>"
+				+ "No action!<br>"
+				+ "<b>Privilege: </b>The prospector takes one doubloon from the bank.</html>";
+		
 	public Prospector() {
-		super(NAME);
+		super(NAME, TOOLTIP);
 	}
 	
 	public void onRoleStart() {

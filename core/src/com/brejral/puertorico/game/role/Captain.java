@@ -15,12 +15,15 @@ import com.brejral.puertorico.game.ship.Ship;
 
 public class Captain extends Role {
 	public static final String NAME = "Captain";
+	public static final String TOOLTIP = "<html><b>" + NAME + "</b><br><b>Action: </b>"
+				+ "In clockwise order, players must load goods on the 3 ships, if they can. Pay attention to the warehouses!<br>"
+				+ "<b>Privilege: </b>With loading, the captain takes one extra victory point.</html>";
 	private boolean hasCaptainReceivedBonus = false;
 	private boolean isDoneShipping = false;
 	private Integer shipIndex = null;
 
 	public Captain() {
-		super(NAME);
+		super(NAME, TOOLTIP);
 	}
 
 	public void onRoleStart() {

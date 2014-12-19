@@ -10,10 +10,13 @@ import com.brejral.puertorico.game.player.Player;
 
 public class Builder extends Role {
 	public static final String NAME = "Builder";
+	public static final String TOOLTIP = "<html><b>" + NAME + "</b><br><b>Action: </b>"
+				+ "In clockwise order, players may build a building.<br>"
+				+ "<b>Privilege: </b>The builder pays one less doubloon than required.</html>";
 	private String selectedBuilding;
 	
 	public Builder() {
-		super(NAME);
+		super(NAME, TOOLTIP);
 	}
 	
 	public void onRoleStart() {
