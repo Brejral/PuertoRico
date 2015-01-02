@@ -1,9 +1,11 @@
 package com.brejral.puertorico.game.bank;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import com.brejral.puertorico.game.GameHelper;
@@ -48,7 +50,7 @@ import com.brejral.puertorico.game.role.Settler;
 import com.brejral.puertorico.game.role.Trader;
 import com.brejral.puertorico.game.ship.Ship;
 
-public class Bank {
+public class Bank implements Serializable {
 	private int settlerSupply, coinSupply, pointSupply;
 	private List<Crop> cropSupply, settlerCropSupply;
 	private List<Quarry> quarrySupply;
@@ -90,7 +92,7 @@ public class Bank {
 			break;
 		}
 	}
-
+	
 	private void initializeSettlerCropSupply() {
 		settlerCropSupply = new ArrayList<Crop>(GameHelper.getNumberOfPlayers() + 1);
 		setSettlerCropSupply();
@@ -141,10 +143,10 @@ public class Bank {
 		roles.add(new Captain());
 		roles.add(new Trader());
 		if (GameHelper.getNumberOfPlayers() == 5) {
-			roles.add(new Prospector());
-			roles.add(new Prospector());
+			roles.add(new Prospector(1));
+			roles.add(new Prospector(2));
 		} else if (GameHelper.getNumberOfPlayers() == 4) {
-			roles.add(new Prospector());
+			roles.add(new Prospector(1));
 		}
 		
 		roleNames = new ArrayList<String>();
@@ -255,6 +257,7 @@ public class Bank {
 	}
 
 	private void setGoodSupply(String cropName, int value) {
+		System.out.println(cropName + " supply changed from " + goodSupply.get(cropName) + " to " + value);
 		goodSupply.put(cropName, value);
 	}
 
@@ -330,6 +333,15 @@ public class Bank {
 		}
 		return null;
 	}
+	
+	public Role getRole(int index) {
+		for (Role role : roles) {
+			if (role.getName().equals(Prospector.NAME) && ((Prospector)role).getIndex() == index) {
+				return role;
+			}
+		}
+		return null;
+	}
 
 	public void addRole(Role role) {
 		this.roles.add(role);
@@ -374,5 +386,9 @@ public class Bank {
 	
 	public boolean isRoleAvailable(String roleName) {
 		return getRole(roleName) != null;
+	}
+	
+	public boolean isRoleAvailable(int index) {
+		return getRole(index) != null;
 	}
 }

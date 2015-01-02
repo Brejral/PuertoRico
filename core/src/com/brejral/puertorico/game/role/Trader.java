@@ -15,12 +15,12 @@ public class Trader extends Role {
 	public static final String TOOLTIP = "<html><b>" + NAME + "</b><br><b>Action: </b>"
 				+ "In clockwise order, players can sell a good at the trading house.<br>"
 				+ "<b>Privilege: </b>With a sale, the trader takes one more doubloon than allowed.</html>";
-		private List<String> tradedGoods = new ArrayList<String>(4);
+	private List<String> tradedGoods = new ArrayList<String>(4);
 
 	public Trader() {
 		super(NAME, TOOLTIP);
 	}
-
+	
 	public void onRoleStart() {
 		super.onRoleStart();
 		if (getTradableGoodsForCurrentPlayer().size() == 0) {
@@ -32,7 +32,7 @@ public class Trader extends Role {
 		Player player = GameHelper.getCurrentPlayerForAction();
 		if (!cropName.equals("None")) {
 			tradedGoods.add(cropName);
-			GameHelper.addGoodsToSupplyFromPlayer(player, cropName, 1);
+			player.subtractGood(cropName, 1);
 			int price = GameHelper.getCropPrice(cropName);
 			price += player.getNumberActiveBuildings(SmallMarket.NAME);
 			price += 2 * player.getNumberActiveBuildings(LargeMarket.NAME);

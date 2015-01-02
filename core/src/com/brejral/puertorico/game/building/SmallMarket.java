@@ -7,7 +7,6 @@ public class SmallMarket extends Building {
 				+ "+ 1 doubloon with sale<br>"
 				+ "(trader phase)</html>";
 
-
 	public SmallMarket() {
 		super(NAME, TOOLTIP);
 		setPrice(1);

@@ -1,5 +1,6 @@
 package com.brejral.puertorico.game.player;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,14 +23,14 @@ import com.brejral.puertorico.game.crop.Tobacco;
 import com.brejral.puertorico.game.role.Role;
 import com.brejral.puertorico.user.User;
 
-public class Player implements Comparable<Player> {
+public class Player implements Comparable<Player>, Serializable {
 	private User user;
 	private String name;
 	private Role role;
 	private int points = 0, coins = 0, settlers = 0;
 	private boolean isGovernor = false, isTurn = false, isAction = false;
 	private List<Crop> crops = new ArrayList<Crop>(12);
-	private List<Building> buildings = new ArrayList<Building>(12); // top to bottom, left to right
+	private List<Building> buildings = new ArrayList<Building>(12); // left to right, top to bottom
 	private HashMap<String, Integer> goods = new HashMap<String, Integer>();
 
 	public Player() {
@@ -44,7 +45,7 @@ public class Player implements Comparable<Player> {
 	public Player(User usr) {
 		user = usr;
 	}
-
+	
 	public User getUser() {
 		return user;
 	}
@@ -313,6 +314,14 @@ public class Player implements Comparable<Player> {
 		}
 		return totalPoints;
 	}
+	
+	public int getSecondaryPoints() {
+		int goods = 0;
+		for (String goodName : Crop.CROP_LIST) {
+			goods += getNumberOfGoods(goodName);
+		}
+		return goods + coins;
+	}
 
 	public int getSettlers() {
 		return settlers;
@@ -359,17 +368,19 @@ public class Player implements Comparable<Player> {
 
 	@Override
 	public int compareTo(Player player) {
+		if (player.getTotalPoints() == this.getTotalPoints()) {
+			return player.getSecondaryPoints() - this.getSecondaryPoints();
+		}
 		return player.getTotalPoints() - this.getTotalPoints();
 	}
 	
 	private boolean isBuildingSpaceFull() {
 		for (int i = 0; i < getBuildings().size(); i++) {
 			Building building = getBuildings().get(i);
-			if (building == null) {
+			if (building == null && i < 4) {
 				return false;
-			}
-			if (building.getSize() == 2) {
-				i++;
+			} else if (building == null && (getBuildings().get(i - 4) == null || getBuildings().get(i - 4).getSize() != 2)) {
+				return false;
 			}
 		}
 		return true;

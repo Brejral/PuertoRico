@@ -1,8 +1,10 @@
 package com.brejral.puertorico.game.role;
 
+import java.io.Serializable;
+
 import com.brejral.puertorico.game.GameHelper;
 
-public class Role {
+public class Role implements Serializable {
 	protected int bonusCoins;
 	private String name, tooltip;
 
@@ -10,7 +12,7 @@ public class Role {
 		this.name = name;
 		this.tooltip = tooltip;
 	}
-
+	
 	public String getName() {
 		return name;
 	}
@@ -41,5 +43,4 @@ public class Role {
 	public void onRoleEnd() {
 		GameHelper.nextTurn();
 	}
-
 }

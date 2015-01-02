@@ -34,8 +34,9 @@ public class Builder extends Role {
 	public void onLocationSelect(int index) {
 		Player player = GameHelper.getCurrentPlayerForAction();
 		Building building = GameHelper.removeBuildingFromSupply(selectedBuilding);
-		if (player.hasActiveBuilding(University.NAME)) {
+		if (player.hasActiveBuilding(University.NAME) && GameHelper.getSettlerSupply() > 0) {
 			building.setSettlers(1);
+			GameHelper.subtractSettlerFromSupply();
 		}
 		player.addBuilding(index, building);
 		GameHelper.addCoinsToSupplyFromPlayer(player, player.getPriceOfBuildingForPlayer(building));
@@ -74,9 +75,9 @@ public class Builder extends Role {
 		if (GameHelper.getBuildingFromSupply(selectedBuilding).getSize() == 1) {
 			return player.getBuildings().get(index) == null; 
 		}
-		if (index == 2 || index == 5 || index == 8 || index == 11) {
+		if (index > 7) {
 			return false; // Cannot build size 2 building on bottom row
 		}
-		return player.getBuildings().get(index) == null && player.getBuildings().get(index + 1) == null;
+		return player.getBuildings().get(index) == null && player.getBuildings().get(index + 4) == null;
 	}
 }

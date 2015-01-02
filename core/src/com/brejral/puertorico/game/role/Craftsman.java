@@ -83,5 +83,4 @@ public class Craftsman extends Role {
 			player = GameHelper.getNextPlayer(player);
 		}
 	}
-
 }

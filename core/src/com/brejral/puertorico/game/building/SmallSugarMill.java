@@ -15,5 +15,4 @@ public class SmallSugarMill extends Building {
 		setPrice(2);
 		setPoints(1);
 	}
-
 }

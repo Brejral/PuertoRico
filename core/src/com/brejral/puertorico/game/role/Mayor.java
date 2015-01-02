@@ -18,7 +18,7 @@ public class Mayor extends Role {
 	public Mayor() {
 		super(NAME, TOOLTIP);
 	}
-
+	
 	public void onRoleStart() {
 		super.onRoleStart();
 		List<Integer> newSettlersList = new ArrayList<Integer>(GameHelper.getNumberOfPlayers());

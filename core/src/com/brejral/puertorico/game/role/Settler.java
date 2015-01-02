@@ -26,7 +26,10 @@ public class Settler extends Role {
 		GameHelper.addCropToPlayerFromSettlerCropSupply(player, crop);
 		if (player.hasActiveBuilding(Hacienda.NAME)) {
 			Crop bonusCrop = GameHelper.getCropSupply().remove(0);
-			bonusCrop.setIsSettled(player.hasActiveBuilding(Hospice.NAME));
+			if (player.hasActiveBuilding(Hospice.NAME) && GameHelper.getSettlerSupply() > 0) {
+				bonusCrop.setIsSettled(true);
+				GameHelper.subtractSettlerFromSupply();
+			}
 			player.addCrop(bonusCrop);
 		}
 		if (GameHelper.getNextPlayer(player).equals(GameHelper.getCurrentPlayerForTurn())) {
@@ -42,6 +45,6 @@ public class Settler extends Role {
 	}
 	
 	public boolean canChooseQuarry(Player player) {
-		return player.isTurn() || player.hasActiveBuilding(ConstructionHut.NAME);
+		return GameHelper.getQuarrySupply().size() > 0 && (player.isTurn() || player.hasActiveBuilding(ConstructionHut.NAME));
 	}
 }

@@ -1,8 +1,10 @@
 package com.brejral.puertorico.game.ship;
 
+import java.io.Serializable;
+
 import com.brejral.puertorico.game.GameHelper;
 
-public class Ship {
+public class Ship implements Serializable {
 	private int goodCapacity, settlers, goods;
 	private String goodName = null;
 

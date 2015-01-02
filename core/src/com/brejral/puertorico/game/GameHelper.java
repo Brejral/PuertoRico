@@ -1,8 +1,10 @@
 package com.brejral.puertorico.game;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map.Entry;
 
 import com.brejral.puertorico.game.bank.Bank;
@@ -25,9 +27,11 @@ import com.brejral.puertorico.game.role.Role;
 import com.brejral.puertorico.game.role.Settler;
 import com.brejral.puertorico.game.role.Trader;
 import com.brejral.puertorico.game.ship.Ship;
+import com.brejral.puertorico.save.SaveHelper;
 
 public class GameHelper {
 	private static Game GAME;
+	private static List<Game> GAME_HISTORY_LIST = new ArrayList<>();
 	public static long RAND_SEED = System.nanoTime();
 
 	public static void setGame(Game game) {
@@ -89,12 +93,12 @@ public class GameHelper {
 		getBank().subtractGoodFromSupply(goodName, addedGoods);
 		return addedGoods;
 	}
-	
+
 	public static void addGoodsToSupplyFromPlayer(Player player, String goodName, int value) {
 		player.subtractGood(goodName, value);
 		getBank().addGoodToSupply(goodName, value);
 	}
-	
+
 	public static void addPointsToPlayerFromSupply(Player player, int value) {
 		player.addPoints(value);
 		getBank().subtractPointsFromSupply(value);
@@ -103,11 +107,32 @@ public class GameHelper {
 	public static List<Player> getPlayers() {
 		return getGame().getPlayers();
 	}
-	
-	public static List<Player> getStandings() {
+
+	public static String getStandingsText() {
 		List<Player> players = getPlayers();
 		Collections.sort(players);
-		return players;
+		String message = "<html>";
+		int i = 1;
+		ListIterator<Player> iter = players.listIterator();
+		Player prevPlayer = null;
+		while (iter.hasNext()) {
+			Player player = iter.next();
+			Player nextPlayer = null;
+			if (iter.hasNext()) {
+				nextPlayer = players.get(iter.nextIndex());
+			}
+			if (prevPlayer != null && (prevPlayer.getTotalPoints() > player.getTotalPoints() || prevPlayer.getSecondaryPoints() > player.getSecondaryPoints())) {
+				i++;
+			}
+			boolean showSecondaryPoints = (nextPlayer != null && nextPlayer.getTotalPoints() == player.getTotalPoints()) || (prevPlayer != null && prevPlayer.getTotalPoints() == player.getTotalPoints());
+			message += i + ". " + player.getName();
+			message += ". Points: " + player.getTotalPoints();
+			message += showSecondaryPoints ? ". Goods & Coins: " + player.getSecondaryPoints() : "";
+			message += "<br>";
+			prevPlayer = player;
+		}
+		message += "</html>";
+		return message;
 	}
 
 	public static Bank getBank() {
@@ -148,8 +173,16 @@ public class GameHelper {
 		return getBank().getRole(roleName);
 	}
 
+	public static Role getRole(int index) {
+		return getBank().getRole(index);
+	}
+
 	public static boolean isRoleAvailable(String roleName) {
 		return getBank().isRoleAvailable(roleName);
+	}
+
+	public static boolean isRoleAvailable(int index) {
+		return getBank().isRoleAvailable(index);
 	}
 
 	public static int getNumberOfRoles() {
@@ -163,7 +196,7 @@ public class GameHelper {
 	public static List<Ship> getCargoShips() {
 		return getBank().getCargoShips();
 	}
-	
+
 	public static void clearCargoShips() {
 		getBank().clearCargoShips();
 	}
@@ -248,7 +281,7 @@ public class GameHelper {
 	public static void setLastRound() {
 		getGame().setLastRound();
 	}
-	
+
 	public static boolean isEndOfGame() {
 		return getGame().isEndOfGame();
 	}
@@ -345,7 +378,7 @@ public class GameHelper {
 		}
 		return ((Trader) getRole(Trader.NAME)).getTradedGoods();
 	}
-	
+
 	public static String getTooltipOfBuilding(String buildingName) {
 		Building building = getBuildingFromSupply(buildingName);
 		if (building != null) {
@@ -358,5 +391,9 @@ public class GameHelper {
 			}
 		}
 		return null;
+	}
+
+	public static void undoMove() {
+		GAME = SaveHelper.loadLastGameFromFile();
 	}
 }

@@ -22,8 +22,15 @@ import javax.swing.border.TitledBorder;
 import com.brejral.puertorico.game.Game;
 import com.brejral.puertorico.game.GameHelper;
 import com.brejral.puertorico.game.building.Building;
+import com.brejral.puertorico.game.building.CoffeeRoaster;
+import com.brejral.puertorico.game.building.GuildHall;
+import com.brejral.puertorico.game.building.IndigoPlant;
 import com.brejral.puertorico.game.building.LargeWarehouse;
+import com.brejral.puertorico.game.building.SmallIndigoPlant;
+import com.brejral.puertorico.game.building.SmallSugarMill;
 import com.brejral.puertorico.game.building.SmallWarehouse;
+import com.brejral.puertorico.game.building.SugarMill;
+import com.brejral.puertorico.game.building.TobaccoStorage;
 import com.brejral.puertorico.game.building.Wharf;
 import com.brejral.puertorico.game.crop.Coffee;
 import com.brejral.puertorico.game.crop.Corn;
@@ -37,21 +44,26 @@ import com.brejral.puertorico.game.role.Builder;
 import com.brejral.puertorico.game.role.Captain;
 import com.brejral.puertorico.game.role.Craftsman;
 import com.brejral.puertorico.game.role.Mayor;
+import com.brejral.puertorico.game.role.Prospector;
 import com.brejral.puertorico.game.role.Role;
 import com.brejral.puertorico.game.role.Settler;
 import com.brejral.puertorico.game.role.Trader;
 import com.brejral.puertorico.game.ship.Ship;
+import com.brejral.puertorico.save.SaveHelper;
 
 // Tim import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 // Tim import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
 public class DesktopLauncher implements ActionListener {
 
-	private static boolean IS_DEBUG = false;
+	private static boolean IS_DEBUG = true;
 
 	/* ********************************************************************************************** */
 	// Global GUI items
 	JFrame mainFrame;
+	
+	JButton undoButton;
+	
 	JLabel supplyCoinsLabel;
 	JLabel supplyPointsLabel;
 	JLabel supplySettlersLabel;
@@ -91,6 +103,7 @@ public class DesktopLauncher implements ActionListener {
 	JButton[] playerGoodsTobaccoButton = new JButton[5];
 	JLabel[] playerGoodsQuarryLabel = new JLabel[5];
 
+	JPanel[] playerPanels = new JPanel[5];
 	JTabbedPane tabbedPlayerPane = null;
 	int playerBuildingsMax = 12;
 	JButton[][] playerBuildings = new JButton[5][playerBuildingsMax];
@@ -153,6 +166,8 @@ public class DesktopLauncher implements ActionListener {
 				((Builder) GameHelper.getCurrentRole()).onLocationSelect(Integer.parseInt(cmd.substring(21)));
 			} else if (GameHelper.isRole(Mayor.NAME)) {
 				((Mayor) GameHelper.getCurrentRole()).addRemoveSettler(true, Integer.parseInt(cmd.substring(21)));
+			} else if (GameHelper.isRole(Captain.NAME)) {
+				((Captain) GameHelper.getCurrentRole()).selectShip(-1, Integer.parseInt(cmd.substring(21)));
 			}
 		} else if (cmd.startsWith("chooseCargoShip")) {
 			displayMessage("Cargo Ship " + cmd.substring(16) + " was chosen");
@@ -179,6 +194,9 @@ public class DesktopLauncher implements ActionListener {
 		} else if (cmd.startsWith("chooseQuarry")) {
 			displayMessage("Quarry was chosen");
 			((Settler) GameHelper.getCurrentRole()).onCropSelect(new Quarry());
+		} else if (cmd.startsWith("undo")) {
+			displayMessage("Undo");
+			GameHelper.undoMove();
 		} else if (cmd.equals("disable")) {
 			// b2.setEnabled(false);
 		} else {
@@ -239,16 +257,25 @@ public class DesktopLauncher implements ActionListener {
 		updateCargoShips();
 		updateTradingHouse();
 		updatePlayers();
+
+		SaveHelper.saveGameToFile();
 	}
 
 	/* ********************************************************************************************** */
 	private void updateRoles() {
 		boolean setEnabled = !GameHelper.hasRoleBeenSelected();
 		List<String> roleList = GameHelper.getRoleNames();
+		int prospectorIndex = 1;
 		for (int i = 0; i < roleList.size(); i++) {
 			String roleName = roleList.get(i);
-			Role role = GameHelper.getRole(roleName);
-			roles[i].setEnabled(setEnabled && GameHelper.isRoleAvailable(roleName));
+			Role role = null;
+			if (roleName.equals(Prospector.NAME)) {
+				role = GameHelper.getRole(prospectorIndex);
+				prospectorIndex++;
+			} else {
+				role = GameHelper.getRole(roleName);
+			}
+			roles[i].setEnabled(setEnabled && role != null);
 			roles[i].setText(roleName + (role != null && role.getBonusCoins() > 0 ? " (+" + role.getBonusCoins() + ")" : ""));
 			if (GameHelper.isRole(roleName)) {
 				roles[i].setBackground(Color.GREEN);
@@ -301,7 +328,6 @@ public class DesktopLauncher implements ActionListener {
 
 	/* ********************************************************************************************** */
 	private void updateBuildings() {
-
 		Role role = GameHelper.getCurrentRole();
 		boolean enabled = false;
 		List<String> affordableBuildings = null;
@@ -370,6 +396,11 @@ public class DesktopLauncher implements ActionListener {
 			cargoShips[i].setText("<html>" + cargoShipsLabel + "</html>");
 			cargoShips[i].setEnabled(enabled && enabledShips.contains(ship));
 			cargoShips[i].setToolTipText(ship.getCargoTooltip());
+			if (GameHelper.isRole(Captain.NAME) && (Integer)i == ((Captain)GameHelper.getCurrentRole()).getSelectedShip()) {
+				cargoShips[i].setBackground(Color.GREEN);
+			} else {
+				cargoShips[i].setBackground(null);
+			}
 		}
 	}
 
@@ -462,8 +493,11 @@ public class DesktopLauncher implements ActionListener {
 					}
 					playerBuildings[i][j].setText(name);
 					playerBuildings[i][j].setToolTipText(building.getTooltip());
-					playerBuildings[i][j].setEnabled(player.isAction() && (GameHelper.isRole(Mayor.NAME) && (building.getSettlers() > 0 || player.getSettlers() > 0)) || (GameHelper.isRole(Captain.NAME) && building.getName().equals(Wharf.NAME)));
-					if (GameHelper.isRole(Captain.NAME) && ((Captain) GameHelper.getCurrentRole()).isDoneShipping() && ((Captain) GameHelper.getCurrentRole()).getOpenWarehouse() != null && ((Captain) GameHelper.getCurrentRole()).getOpenWarehouse().equals(building)) {
+					playerBuildings[i][j].setEnabled(player.isAction() && ((GameHelper.isRole(Mayor.NAME) && (building.getSettlers() > 0 || player.getSettlers() > 0)) || 
+								(GameHelper.isRole(Captain.NAME) && !((Captain)GameHelper.getCurrentRole()).hasShipBeenSelected() && building.getName().equals(Wharf.NAME) && building.isActive())));
+					if (GameHelper.isRole(Captain.NAME) 
+								&& ((((Captain) GameHelper.getCurrentRole()).isDoneShipping() && ((Captain) GameHelper.getCurrentRole()).getOpenWarehouse() != null && ((Captain) GameHelper.getCurrentRole()).getOpenWarehouse().equals(building)) 
+								|| ((Captain) GameHelper.getCurrentRole()).hasShipBeenSelected() && (Integer)j == ((Captain) GameHelper.getCurrentRole()).getWharfIndex())) {
 						playerBuildings[i][j].setBackground(Color.GREEN);
 					} else {
 						playerBuildings[i][j].setBackground(null);
@@ -492,13 +526,7 @@ public class DesktopLauncher implements ActionListener {
 
 	private void checkForEndOfGame() {
 		if (GameHelper.isEndOfGame()) {
-			String message = "<html>";
-			int i = 1;
-			for (Player player : GameHelper.getStandings()) {
-				message += i + ". " + player.getName() + ". Points: " + player.getTotalPoints() + "<br>";
-			}
-			message += "</html>";
-			JOptionPane.showMessageDialog(mainFrame, message, "Final Standings", JOptionPane.OK_OPTION);
+			JOptionPane.showMessageDialog(mainFrame, GameHelper.getStandingsText(), "Final Standings", JOptionPane.OK_OPTION, null);
 		}
 	}
 
@@ -593,6 +621,11 @@ public class DesktopLauncher implements ActionListener {
 		JPanel subPanel = new JPanel();
 		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.X_AXIS));
 
+		// Setup Menu Panel
+		JPanel menuPanel = new JPanel(new GridLayout(1, 0), false);
+		undoButton = createButton(menuPanel, "Undo", "undo");
+		mainPanel.add(menuPanel);
+			
 		// Supplies
 		TitledBorder supplyBorder = BorderFactory.createTitledBorder("Supplies:");
 		supplyBorder.setTitleJustification(TitledBorder.LEFT);
@@ -617,11 +650,11 @@ public class DesktopLauncher implements ActionListener {
 		JPanel goodsPanel = new JPanel(new GridLayout(1, 0), false);
 		goodsPanel.setBorder(goodsBorder);
 
-		supplyGoodsCoffeeLabel = createLabelPair(goodsPanel, Coffee.NAME);
 		supplyGoodsCornLabel = createLabelPair(goodsPanel, Corn.NAME);
 		supplyGoodsIndigoLabel = createLabelPair(goodsPanel, Indigo.NAME);
 		supplyGoodsSugarLabel = createLabelPair(goodsPanel, Sugar.NAME);
 		supplyGoodsTobaccoLabel = createLabelPair(goodsPanel, Tobacco.NAME);
+		supplyGoodsCoffeeLabel = createLabelPair(goodsPanel, Coffee.NAME);
 		subPanel.add(goodsPanel);
 
 		mainPanel.add(subPanel);
@@ -782,9 +815,9 @@ public class DesktopLauncher implements ActionListener {
 		// Tim LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		// Tim new LwjglApplication(new PuertoRico(), config);
 		List<Player> players = new ArrayList<Player>();
-		for (int i = 0; i < 3; i++) {
-			players.add(new Player("Player " + (i + 1)));
-		}
+		players.add(new Player("Tyler"));
+		players.add(new Player("Dad"));
+		players.add(new Player("Mom"));
 		new Game(players);
 
 		if (IS_DEBUG) {
@@ -802,9 +835,19 @@ public class DesktopLauncher implements ActionListener {
 			sWarehouse.addSettlers(1);
 			LargeWarehouse lWarehouse = new LargeWarehouse();
 			lWarehouse.addSettlers(1);
-			playerList.get(0).addBuilding(0, sWarehouse);
-			playerList.get(1).addBuilding(0, lWarehouse);
-			playerList.get(2).addBuilding(0, sWarehouse);
+			Wharf wharf = new Wharf();
+			wharf.setSettlers(1);
+			playerList.get(0).addBuilding(0, wharf);
+			playerList.get(0).addBuilding(1, lWarehouse);
+			playerList.get(0).addBuilding(2, new IndigoPlant());
+			playerList.get(0).addBuilding(3, new TobaccoStorage());
+			playerList.get(0).addBuilding(4, new CoffeeRoaster());
+			playerList.get(0).addBuilding(5, new SmallIndigoPlant());
+			playerList.get(0).addBuilding(9, new SugarMill());
+			playerList.get(0).addBuilding(8, new SmallSugarMill());
+			playerList.get(0).addBuilding(6, new GuildHall());
+			playerList.get(0).addCoins(10);
+			//playerList.get(2).addBuilding(0, sWarehouse);
 			GameHelper.getBank().setSettlerSupply(0);
 		}
 

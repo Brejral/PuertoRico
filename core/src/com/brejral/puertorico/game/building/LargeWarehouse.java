@@ -11,13 +11,12 @@ public class LargeWarehouse extends Building {
 				+ "(captain phase)</html>";
 	private List<String> goodsStored = new ArrayList<>();
 
-
 	public LargeWarehouse() {
 		super(NAME, TOOLTIP);
 		setPrice(6);
 		setPoints(2);
 	}
-
+	
 	public List<String> getGoodsStored() {
 		return goodsStored;
 	}

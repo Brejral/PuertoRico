@@ -16,5 +16,4 @@ public class SugarMill extends Building {
 		setCrop(Sugar.NAME);
 		setPoints(2);
 	}
-
 }

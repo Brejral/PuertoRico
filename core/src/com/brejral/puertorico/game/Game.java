@@ -1,8 +1,8 @@
 package com.brejral.puertorico.game;
 
-import java.util.Collections;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import com.brejral.puertorico.game.bank.Bank;
 import com.brejral.puertorico.game.crop.Corn;
@@ -10,7 +10,7 @@ import com.brejral.puertorico.game.crop.Indigo;
 import com.brejral.puertorico.game.player.Player;
 import com.brejral.puertorico.game.role.Role;
 
-public class Game {
+public class Game implements Serializable {
 	private int numberOfPlayers;
 	private Bank bank;
 	private List<Player> players;
@@ -21,11 +21,11 @@ public class Game {
 		GameHelper.setGame(this);
 		this.players = players;
 		bank = new Bank();
-		StartGame();
+		startGame();
 	}
-
-	private void StartGame() {
-		Collections.shuffle(players, new Random(GameHelper.RAND_SEED));
+	
+	private void startGame() {
+		//Collections.shuffle(players, new Random(GameHelper.RAND_SEED));
 
 		// Decide how many players get Corn
 		int numGetCorn = 2;
@@ -63,6 +63,7 @@ public class Game {
 	}
 
 	public void setLastRound() {
+		System.out.println("Last Round");
 		isLastRound = true;
 	}
 

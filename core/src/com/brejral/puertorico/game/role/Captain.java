@@ -20,12 +20,12 @@ public class Captain extends Role {
 				+ "<b>Privilege: </b>With loading, the captain takes one extra victory point.</html>";
 	private boolean hasCaptainReceivedBonus = false;
 	private boolean isDoneShipping = false;
-	private Integer shipIndex = null;
+	private Integer shipIndex = null, wharfIndex = null;
 
 	public Captain() {
 		super(NAME, TOOLTIP);
 	}
-
+	
 	public void onRoleStart() {
 		super.onRoleStart();
 		if (getShipsPlayerCanSelect().size() == 0 && !hasUnusedWharf()) {
@@ -40,8 +40,13 @@ public class Captain extends Role {
 		Ship selectedShip = shipIndex > -1 ? GameHelper.getCargoShips().get(shipIndex) : null;
 		List<String> goodOptions = getGoodsPlayerCanSelect();
 		if ((selectedShip != null && selectedShip.hasGoods()) || goodOptions.size() == 1) {
-			selectGoodToShip(selectedShip.hasGoods() ? selectedShip.getGoodName() : goodOptions.get(0));
+			selectGoodToShip(selectedShip != null && selectedShip.hasGoods() ? selectedShip.getGoodName() : goodOptions.get(0));
 		}
+	}
+	
+	public void selectShip(int shipIndex, int wharfIndex) {
+		this.wharfIndex = wharfIndex;
+		selectShip(shipIndex);
 	}
 
 	public void selectGoodToShip(String goodName) {
@@ -64,6 +69,7 @@ public class Captain extends Role {
 			ship.addGoods(shippedGoods);
 		}
 		shipIndex = null;
+		wharfIndex = null;
 		advanceToNextShippingAction();
 	}
 
@@ -74,6 +80,7 @@ public class Captain extends Role {
 			if (player.getNumberOfGoods(goodName) > 1) {
 				GameHelper.addGoodsToSupplyFromPlayer(player, goodName, player.getNumberOfGoods(goodName) - 1);
 			}
+			clearUnstoredGoodsForPlayer(goodName);
 			advanceToNextStoringAction();
 		} else if (building.getName().equals(SmallWarehouse.NAME)) {
 			((SmallWarehouse) building).storeGood(goodName);
@@ -177,8 +184,12 @@ public class Captain extends Role {
 		return shipIndex != null;
 	}
 
-	public int getSelectedShip() {
+	public Integer getSelectedShip() {
 		return shipIndex;
+	}
+	
+	public Integer getWharfIndex() {
+		return wharfIndex;
 	}
 
 	public boolean isDoneShipping() {
@@ -188,7 +199,7 @@ public class Captain extends Role {
 	private boolean hasUnusedWharf() {
 		List<Building> wharfs = GameHelper.getCurrentPlayerForAction().getBuildings(Wharf.NAME);
 		for (Building building : wharfs) {
-			if (!((Wharf) building).isUsed()) {
+			if (building.isActive() && !((Wharf) building).isUsed()) {
 				return true;
 			}
 		}
@@ -198,8 +209,10 @@ public class Captain extends Role {
 	private void setUsedWharf() {
 		List<Building> wharfs = GameHelper.getCurrentPlayerForAction().getBuildings(Wharf.NAME);
 		for (Building building : wharfs) {
-			if (!((Wharf) building).isUsed()) {
+			if (building.isActive() && !((Wharf) building).isUsed()) {
 				((Wharf) building).invertIsUsed();
+				wharfIndex = GameHelper.getCurrentPlayerForAction().getBuildings().indexOf(building);
+				break;
 			}
 		}
 	}
@@ -273,5 +286,23 @@ public class Captain extends Role {
 			return true;
 		}
 		return false;
+	}
+	
+	private void clearUnstoredGoodsForPlayer(String goodName) {
+		Player player = GameHelper.getCurrentPlayerForAction();
+		List<String> goodsStored = new ArrayList<>();
+		List<Building> warehouses = getWarehousesForPlayer();
+		for (Building building : warehouses) {
+			if (building.getName().equals(SmallWarehouse.NAME)) {
+				goodsStored.addAll(((SmallWarehouse)building).getGoodsStored());
+			} else if (building.getName().equals(LargeWarehouse.NAME)) {
+				goodsStored.addAll(((LargeWarehouse)building).getGoodsStored());
+			}
+		}
+		for (String good : Crop.CROP_LIST) {
+			if (player.getNumberOfGoods(good) > 0 && !goodsStored.contains(good)) {
+				GameHelper.addGoodsToSupplyFromPlayer(player, good, player.getNumberOfGoods(good) - (goodName.equals(good) ? 1 : 0));
+			}
+		}
 	}
 }

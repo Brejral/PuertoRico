@@ -1,8 +1,10 @@
 package com.brejral.puertorico.game.building;
 
+import java.io.Serializable;
+
 import com.brejral.puertorico.game.player.Player;
 
-public class Building {
+public class Building  implements Serializable {
 	public static final String[] BUILDING_LIST = { "Small Indigo Plant", "Small Sugar Mill", "Small Market", "Hacienda", "Construction Hut", "Small Warehouse", "Indigo Plant", "Sugar Mill", "Hospice", "Office", "Large Market", "Large Warehouse",
 				"Tobacco Storage", "Coffee Roaster", "Factory", "University", "Harbor", "Wharf", "Guild Hall", "Residence", "Fortress", "City Hall", "Customs House" };
 	private String name, tooltip;

@@ -1,7 +1,8 @@
 package com.brejral.puertorico.game.crop;
 
+import java.io.Serializable;
 
-public class Crop {
+public class Crop implements Serializable {
 	public static final String[] CROP_LIST = {"Corn", "Indigo", "Sugar", "Tobacco", "Coffee" };
 	private boolean isSettled;
 	private String name;
